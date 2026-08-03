@@ -42,40 +42,29 @@ apple-touch-icon (ikisi de eksikti), panelden SMTP ile mesaj yanitlama
 (migration 002), IP basina gunde bir okunma sayaci, API/MCP sayfasinin
 adim adim yeniden yazimi, panel alan adinin yalnizca yonetim yollarini sunmasi.
 
+**2026-08-03 kapatilan iki bulgu:**
+`Server` header'i artik `muslu@makdos` — deger ortak `/etc/nginx/nginx.conf`
+satir 24'te (`more_set_headers`), yani **sunucudaki 10 sitenin hepsini** etkiler;
+degistirildikten sonra muslu.dev / muslu.org / djangoturkiye.com dahil hepsi
+kontrol edildi, saglikli. Yedek: `/root/nginx.conf.yedek.*`.
+HEAD istekleri artik 200 donuyor — `main.py` icinde router'lar mount edildikten
+sonra tek gecisle GET route'larina HEAD ekleniyor (FastAPI `APIRoute` bunu
+Starlette'in aksine kendiliginden yapmaz).
+
 **Acik kalan isler:**
 
-1. **HEAD istekleri tum sitede 405 donuyor** (GET'ler sorunsuz).
-   FastAPI'nin `APIRoute`'u — Starlette'in `Route`'unun aksine — `@router.get`
-   ile tanimlanan yollara **HEAD eklemez**; `main.app.routes` uzerinde dogrulandi:
-   `/` → `['GET']`. Etkisi: HEAD kullanan uptime monitorleri, link denetleyicileri
-   ve bazi crawler'lar 405 alir.
-   Duzeltme secenekleri: ilgili yollari `@router.api_route(..., methods=["GET","HEAD"])`
-   ile tanimlamak (8 route) veya tek bir middleware'de HEAD'i GET'e cevirmek
-   (govde/Content-Length davranisi dikkat ister). Kapsam disi oldugu icin yapilmadi.
-
-   **ONCEKI TESHIS YANLISTI, DUZELTILDI:** "sitemap/robots yanlis Content-Type
-   donuyor" diye kaydedilen bulgu gercek degildi — `curl -I` HEAD gonderdigi icin
-   405 hata sayfasinin `text/html` tipi olculmustu. Gercek GET yanitlari **dogru**:
-   `robots.txt` → `text/plain; charset=utf-8`, `sitemap.xml` → `application/xml; charset=utf-8`.
-   nginx bu konuda tamamen suclu degil. Ders: Content-Type olcerken `curl -I` degil
-   `curl -s -o /dev/null -w '%{content_type}'` kullan.
-
-2. **`Server` header `musluyuksektepe`** donuyor, global kural `muslu@makdos` diyor.
-   Deger ortak nginx yapilandirmasindan geliyor — degistirmek **diger siteleri de**
-   etkiler, once kullaniciya sor.
-
-3. **Uyari: `git remote` URL'sinde GitHub PAT gomulu.** `.mcp.json` (sunucu root
+1. **Uyari: `git remote` URL'sinde GitHub PAT gomulu.** `.mcp.json` (sunucu root
    parolasi icerir) bir ara yanlislikla index'e alinmisti; unstage edildi ve gecmise
    sizmadi (HEAD'deki `ilk.txt` bostu). Commit oncesi `git diff --cached` ile bak.
 
-4. **Ilk yazi yayinda:** "Alphacam'de Ilk VBA Makronuz" (id=1, 5 etiket, gorseli
+2. **Ilk yazi yayinda:** "Alphacam'de Ilk VBA Makronuz" (id=1, 5 etiket, gorseli
    `static/img/blog/alphacam-makro-akisi.svg`). Yazidaki Alphacam API cekirdegi
    (`App`, `App.ActiveDrawing`, `Drw.RunQuery`, `App.LicomdatPath`) web
    kaynaklarindan dogrulandi; **geometri olusturma / operasyon ekleme imzalari
    dogrulanamadi**, o yuzden yaziya konmadi — okuyucu Object Browser'a
    yonlendiriliyor. Gokhan kendi kurulumunda teyit edince genisletilebilir.
 
-5. **Panel erisimi:** kullanici adi `gokhan`. Parola sunucuda
+3. **Panel erisimi:** kullanici adi `gokhan`. Parola sunucuda
    `/opt/gokhancoskun/.ilk-parola` dosyasinda; ayrica DB'de Fernet ile geri
    cozulebilir sekilde duruyor (`decrypt_password`). `last_login_at` uzun sure
    bos kaldi — parola degistirilince o dosya silinmeli.
