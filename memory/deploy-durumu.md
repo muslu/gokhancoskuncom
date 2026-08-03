@@ -35,6 +35,13 @@ ile ulasti ✓. Panel SSL alindi (Let's Encrypt, `CN=panel.gokhancoskun.com`,
 1 Kasim 2026'ya kadar, otomatik yenileme kurulu). Erisilebilirlik yeniden olculdu:
 `/` ve `/iletisim` → 100/100.
 
+**2026-08-03 ikinci dalga (hepsi canlida dogrulandi):** WhatsApp sabit bagi,
+Alphacam kullanim serisi (9 yazi + 9 animasyonlu SVG, toplam 10 yazi yayinda),
+Google Search Console dogrulama + GA4 (`G-37SYYCK7EM`), OG gorseli ve
+apple-touch-icon (ikisi de eksikti), panelden SMTP ile mesaj yanitlama
+(migration 002), IP basina gunde bir okunma sayaci, API/MCP sayfasinin
+adim adim yeniden yazimi, panel alan adinin yalnizca yonetim yollarini sunmasi.
+
 **Acik kalan isler:**
 
 1. **HEAD istekleri tum sitede 405 donuyor** (GET'ler sorunsuz).
