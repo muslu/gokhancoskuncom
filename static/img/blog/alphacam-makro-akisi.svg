@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Alphacam VBA makro akisi — animasyonlu SVG.
+
+  Bu dosya <img> ile gomulur, yani KENDI BELGESIDIR:
+    * site.css'in renk tokenlari ve prefers-reduced-motion kurali buraya ULASMAZ,
+      o yuzden ikisi de asagida yeniden tanimlandi.
+    * Ayni sebeple tema, sitenin data-theme secimini degil isletim sisteminin
+      prefers-color-scheme degerini izler.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" role="img"
+     aria-labelledby="baslik aciklama">
+  <title id="baslik">Alphacam VBA makrosunun calisma akisi</title>
+  <desc id="aciklama">Solda VBA editorunde makro kodu satir satir yaziliyor,
+    ortadaki ok makronun calistirilmasini gosteriyor, sagda cizimdeki parcalar
+    sirayla ic ve dis katmanlara ayriliyor.</desc>
+
+  <style>
+    svg {
+      --yuzey: #ffffff; --yuzey2: #f0ece4; --kenar: #7d7669; --ince: #d9d3c7;
+      --metin: #413e38; --soluk: #5a564d; --marka: #a8492a; --ic: #186a3b;
+      --golge: #1b1a17;
+    }
+    @media (prefers-color-scheme: dark) {
+      svg {
+        --yuzey: #1c1b16; --yuzey2: #25241d; --kenar: #7a7466; --ince: #3a3830;
+        --metin: #f2efe7; --soluk: #a8a294; --marka: #e08a68; --ic: #66d19e;
+        --golge: #000000;
+      }
+    }
+
+    .pencere { fill: var(--yuzey); stroke: var(--kenar); stroke-width: 2; }
+    .serit   { fill: var(--yuzey2); }
+    .ince    { stroke: var(--ince); stroke-width: 1.5; fill: none; }
+    .yazi    { fill: var(--metin); font: 600 13px ui-sans-serif, system-ui, sans-serif; }
+    .kucuk   { fill: var(--soluk); font: 500 11px ui-sans-serif, system-ui, sans-serif; }
+    .kod     { fill: var(--soluk); font: 12px ui-monospace, Menlo, Consolas, monospace; }
+    .kod-anh { fill: var(--marka); font: 600 12px ui-monospace, Menlo, Consolas, monospace; }
+    .marka   { fill: var(--marka); }
+    .parca   { fill: var(--yuzey2); stroke: var(--kenar); stroke-width: 2; }
+
+    /* Tasarim kurali: STATIK HAL EKSIKSIZ OKUNUR olmali. Animasyon hic
+       calismasa da (reduced-motion, eski istemci, goruntu yakalama) kod
+       satirlari, katman renkleri ve etiketler yerinde durur. Hareket yalnizca
+       anlatiyi tasir — bilgiyi tasimaz. */
+
+    /* Okunan satiri gosteren vurgu, satirdan satira iner */
+    .imlec { fill: var(--marka); opacity: 0.16; animation: imlec-in 7s steps(1, end) infinite; }
+
+    /* Calistir okunun nabzi — sonuk hali bile gorunur (0.55) */
+    .ok { animation: ok-nabiz 7s ease-in-out infinite; }
+
+    /* Parcalar sirayla katman rengini alir; varsayilan zaten ayrilmis renk */
+    .ayrilan { fill: var(--ic); animation: ayril 7s ease-in-out infinite; }
+    .a1 { animation-delay: 0s; }    .a2 { animation-delay: 0.25s; }
+    .a3 { animation-delay: 0.5s; }  .a4 { animation-delay: 0.75s; }
+
+    @keyframes imlec-in {
+      0%,  18% { transform: translateY(0); }
+      22%, 38% { transform: translateY(28px); }
+      42%, 58% { transform: translateY(56px); }
+      62%, 78% { transform: translateY(84px); }
+      82%, 100% { transform: translateY(112px); }
+    }
+    @keyframes ok-nabiz {
+      0%, 26%   { opacity: 0.55; }
+      31%, 38%  { opacity: 1; }
+      46%, 100% { opacity: 0.55; }
+    }
+    @keyframes ayril {
+      0%, 30%   { fill: var(--yuzey2); }
+      40%, 92%  { fill: var(--ic); }
+      100%      { fill: var(--yuzey2); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .imlec, .ok, .ayrilan { animation: none; }
+      .ok { opacity: 1; }
+      .imlec { opacity: 0; }
+    }
+  </style>
+
+  <!-- ================= SOL: VBA editoru ================= -->
+  <g>
+    <rect class="pencere" x="16" y="40" width="300" height="230" rx="8"/>
+    <path class="serit" d="M16 48a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22H16z"/>
+    <line class="ince" x1="16" y1="70" x2="316" y2="70"/>
+    <circle class="marka" cx="34" cy="55" r="4"/>
+    <text class="yazi" x="48" y="60">VBA Editörü</text>
+
+    <rect class="imlec" x="24" y="84" width="284" height="24" rx="4"/>
+
+    <text class="kod" x="32" y="101">Option Explicit</text>
+    <text class="kod" x="32" y="129">Sub KatmanAyir()</text>
+    <text class="kod" x="46" y="157">Dim Drw As <tspan class="kod-anh">Drawing</tspan></text>
+    <text class="kod" x="46" y="185">Set Drw = <tspan class="kod-anh">App.ActiveDrawing</tspan></text>
+    <text class="kod" x="46" y="213">Drw.RunQuery "InOut.agq"</text>
+    <text class="kod" x="32" y="241">End Sub</text>
+  </g>
+
+  <!-- ================= ORTA: calistir ================= -->
+  <g class="ok">
+    <path class="marka" d="M344 152h44v12h-44z"/>
+    <path class="marka" d="M388 140l24 18-24 18z"/>
+    <text class="kucuk marka" x="378" y="192" text-anchor="middle">Çalıştır</text>
+  </g>
+
+  <!-- ================= SAG: cizim alani ================= -->
+  <g>
+    <rect class="pencere" x="440" y="40" width="264" height="230" rx="8"/>
+    <path class="serit" d="M440 48a8 8 0 0 1 8-8h248a8 8 0 0 1 8 8v22H440z"/>
+    <line class="ince" x1="440" y1="70" x2="704" y2="70"/>
+    <text class="yazi" x="456" y="60">Çizim</text>
+
+    <!-- Dis kontur — makro bunu disarida birakir -->
+    <rect class="parca" x="464" y="90" width="216" height="160" rx="6"/>
+
+    <!-- Ic cepler — sirayla "Ic" katmanina alinir -->
+    <rect class="parca ayrilan a1" x="492" y="118" width="60" height="44" rx="4"/>
+    <rect class="parca ayrilan a2" x="592" y="118" width="60" height="44" rx="4"/>
+    <circle class="parca ayrilan a3" cx="522" cy="206" r="24"/>
+    <circle class="parca ayrilan a4" cx="622" cy="206" r="24"/>
+  </g>
+
+  <!-- ================= Alt etiketler ================= -->
+  <g>
+    <rect x="440" y="286" width="14" height="14" rx="3" fill="var(--ic)"/>
+    <text class="kucuk" x="462" y="298">İç katman — makro ayırdı</text>
+    <rect x="612" y="286" width="14" height="14" rx="3" fill="var(--yuzey2)" stroke="var(--kenar)" stroke-width="2"/>
+    <text class="kucuk" x="634" y="298">Dış</text>
+  </g>
+  <text class="kucuk" x="16" y="298">Makro bir kez yazılır, her çizimde tekrar çalışır.</text>
+</svg>

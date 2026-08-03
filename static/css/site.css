@@ -295,6 +295,32 @@ a { color: var(--brand); }
   justify-self: center;
 }
 
+/* ---------- Sabit WhatsApp bagi ----------
+   Renk OLCULDU (WCAG 1.4.11, grafik nesneler icin esik 3:1):
+     WhatsApp'in parlak yesili #25D366 beyaz ikonla 1.98:1 ve acik tema
+     zeminiyle 1.90:1 — iki yonden de KALIYOR, o yuzden kullanilmadi.
+     Marka paletinin koyu yesili #128C7E: ikon 4.14:1, acik tema zemini 3.96:1,
+     koyu tema zemini 4.49:1 — ucu de gecer. Hover #0e7a6b: 5.23 / 5.01 / 3.55.
+   Boyut 56px: WCAG 2.5.5 dokunma hedefi (min 44px) rahat asilir. */
+.whatsapp {
+  position: fixed; right: clamp(0.75rem, 3vw, 1.5rem); bottom: clamp(0.75rem, 3vw, 1.5rem);
+  z-index: 50;
+  display: grid; place-items: center;
+  width: 56px; height: 56px;
+  background: #128C7E; color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 28%);
+  transition: background-color 0.18s ease, transform 0.18s ease;
+}
+.whatsapp svg { width: 30px; height: 30px; }
+.whatsapp:hover, .whatsapp:focus-visible { background: #0e7a6b; transform: scale(1.06); }
+/* Yazdirmada anlamsiz */
+@media print { .whatsapp { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp { transition: none; }
+  .whatsapp:hover, .whatsapp:focus-visible { transform: none; }
+}
+
 /* ---------- CNC animasyonu (anasayfa) ---------- */
 .cnc-figur {
   margin: 0 0 clamp(2rem, 5vw, 3rem);
