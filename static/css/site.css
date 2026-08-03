@@ -301,7 +301,7 @@ a { color: var(--brand); }
   padding-left: 1.4rem;
   display: grid;
   gap: 0.6rem;
-  max-width: 46rem;
+  max-width: 64rem;
   color: var(--fg-soft);
 }
 .adimlar li { padding-left: 0.2rem; }
@@ -312,7 +312,7 @@ a { color: var(--brand); }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
-  max-width: 46rem;
+  max-width: 64rem;
 }
 .rehber > summary {
   cursor: pointer;
@@ -334,7 +334,7 @@ a { color: var(--brand); }
   padding-left: 1.4rem;
   display: grid;
   gap: 0.45rem;
-  max-width: 46rem;
+  max-width: 64rem;
   color: var(--fg-soft);
 }
 
@@ -618,8 +618,13 @@ input::placeholder, textarea::placeholder { color: var(--fg-mute); opacity: 1; }
 .giris-kutu h1 { font-size: 1.5rem; margin-bottom: 0.35em; }
 .giris-kutu .form { max-width: none; }
 
+/* Blok: <span> olarak kullanildiginda cumlenin icinde akip tasiyordu —
+   kendi satirinda, tam genislikte durmali. */
 .jeton-kutu {
-  font-family: var(--font-mono); font-size: 0.85rem; word-break: break-all;
+  display: block;
+  margin: 0.6rem 0;
+  font-family: var(--font-mono); font-size: 0.85rem;
+  overflow-wrap: anywhere;
   background: var(--surface-2); border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm); padding: 0.75rem; color: var(--fg);
 }

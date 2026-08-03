@@ -130,7 +130,7 @@
     <ol class="adimlar">
       <li>Proje klasöründeki <code>.env</code> dosyasını açın.</li>
       <li>Şu iki satırı yazın:
-        <span class="jeton-kutu" style="margin-top:0.5rem">GC_API_BASE={{ panel_url }}<br>GC_API_TOKEN=kopyaladığınız-token</span>
+        <span class="jeton-kutu">GC_API_BASE={{ panel_url }}<br>GC_API_TOKEN=kopyaladığınız-token</span>
       </li>
       <li>Claude'u <strong>kapatıp yeniden açın.</strong> Bağlantıyı okumak için
         yeniden başlaması gerekir.</li>
@@ -140,36 +140,65 @@
   </details>
 
   <details class="rehber">
-    <summary>ChatGPT ile (Custom GPT)</summary>
+    <summary>ChatGPT ile (kendi GPT'nizi oluşturarak)</summary>
     <p class="metin">ChatGPT'nin ücretli sürümünde kendi GPT'nizi oluşturup bu
-      siteye bağlayabilirsiniz.</p>
+      siteye bağlayabilirsiniz. Menü adları arayüz diline göre değişir; ikisini
+      de yazdım.</p>
     <ol class="adimlar">
-      <li>ChatGPT'de <strong>Explore GPTs → Create</strong> yolunu izleyin.</li>
-      <li><strong>Configure</strong> sekmesinde en alttaki
-        <strong>Create new action</strong>'a tıklayın.</li>
-      <li><strong>Import from URL</strong> kutusuna şunu yapıştırın:
-        <span class="jeton-kutu" style="margin-top:0.5rem">{{ panel_url }}/api/openapi.json</span>
+      <li><strong>GPT'leri Keşfet</strong> (<em>Explore GPTs</em>) →
+        <strong>Oluştur</strong> (<em>Create</em>).</li>
+      <li><strong>Yapılandır</strong> (<em>Configure</em>) sekmesinde en alttaki
+        <strong>Yeni eylem oluştur</strong> (<em>Create new action</em>).</li>
+      <li><strong>URL'den içe aktar</strong> (<em>Import from URL</em>) kutusuna
+        şu adresi yapıştırın:
+        <span class="jeton-kutu">{{ panel_url }}/api/openapi.json</span>
         Bu adres, sitenin hangi işlemleri kabul ettiğini ChatGPT'ye kendisi anlatır.
       </li>
-      <li><strong>Authentication</strong> bölümünde
-        <strong>API Key</strong> → <strong>Bearer</strong> seçin ve
-        token'ı yapıştırın.</li>
+      <li><strong>Kimlik Doğrulama</strong> (<em>Authentication</em>) bölümünde
+        <strong>API Anahtarı</strong> (<em>API Key</em>) →
+        <strong>Taşıyıcı</strong> (<em>Bearer</em>) seçin, token'ı yapıştırın.</li>
       <li>Kaydedin. Artık o GPT'ye <em>“yeni bir taslak yazı oluştur”</em>
         diyebilirsiniz.</li>
     </ol>
   </details>
 
   <details class="rehber">
-    <summary>Gemini ve diğer araçlar</summary>
+    <summary>Sohbet sitelerinden MCP ile bağlanmak (henüz hazır değil)</summary>
     <p class="metin">
-      Gemini'nin sohbet arayüzünde, ChatGPT'deki gibi hazır bir “kendi API'ni
-      bağla” alanı <strong>bulunmuyor.</strong> Gemini ile kullanmak için
-      Google AI Studio üzerinden <em>function calling</em> kurmanız gerekir —
-      bu, sohbet ayarından değil kod yazarak yapılan bir iştir.
+      Claude ve ChatGPT'nin <strong>web</strong> arayüzleri artık MCP sunucusu
+      bağlamayı destekliyor:
     </p>
+    <ul class="ornekler">
+      <li><strong>Claude</strong> (claude.ai) → <strong>Ayarlar</strong>
+        (<em>Settings</em>) → <strong>Bağlayıcılar</strong> (<em>Connectors</em>)
+        → <strong>Ekle</strong> (<em>Add</em>) →
+        <strong>Özel bağlayıcı ekle</strong> (<em>Add custom connector</em>)</li>
+      <li><strong>ChatGPT</strong> → <strong>Ayarlar</strong> →
+        <strong>Gelişmiş</strong> (<em>Advanced</em>) →
+        <strong>Geliştirici Modu</strong>nu (<em>Developer Mode</em>) açın →
+        <strong>Bağlayıcılar</strong> (<em>Connectors</em>) sekmesi</li>
+      <li><strong>Gemini</strong> (gemini.google.com) → sohbet arayüzünde
+        <strong>MCP desteği yok.</strong> Yalnızca Google AI Studio'da,
+        kod yazarak bağlanılabilir.</li>
+    </ul>
+    <div class="uyari uyari-bilgi" style="margin-top:1rem">
+      <strong>Şu an bu yolla bağlanamazsınız.</strong> Her iki site de
+      <em>uzak</em> (internetten erişilebilir, HTTPS) bir MCP sunucusu ister.
+      Bu sitenin MCP sunucusu ise <em>yerel</em> çalışıyor — yani yalnızca
+      kendi bilgisayarınızdaki Claude ile. Web arayüzlerinden bağlanmak için
+      MCP sunucusunun sunucuya kurulup adres verilmesi gerekir; istendiğinde
+      yapılabilir.
+    </div>
+    <p class="metin" style="margin-top:0.75rem">
+      O zamana kadar <strong>ChatGPT için yukarıdaki “kendi GPT'niz”</strong>
+      yöntemi aynı işi görür — MCP değil ama aynı işlemleri yapar.
+    </p>
+  </details>
+
+  <details class="rehber">
+    <summary>Diğer araçlar / doğrudan API</summary>
     <p class="metin">
-      Kod yazmadan denemek isterseniz, herhangi bir araçtan aşağıdaki komutu
-      çalıştırarak bağlantıyı test edebilirsiniz:
+      Bağlantıyı herhangi bir yerden sınamak için:
     </p>
     <span class="jeton-kutu">curl -H "Authorization: Bearer TOKEN" \<br>&nbsp;&nbsp;{{ panel_url }}/api/v1/kimlik</span>
     <p class="metin" style="margin-top:0.75rem">
