@@ -1,0 +1,101 @@
+{% extends "panel/taban.html" %}
+{% block title %}Kişisel bilgiler{% endblock %}
+
+{% block content %}
+<div class="panel-baslik">
+  <h1>Kişisel bilgiler</h1>
+  <a class="dugme dugme-ikincil" href="/" target="_blank" rel="noopener">
+    Anasayfada gör<span class="gorsel-gizli"> (yeni sekmede açılır)</span>
+  </a>
+</div>
+
+<form class="form form-genis" method="post" action="/panel/profil">
+  <div class="alan">
+    <label for="ad">Ad soyad</label>
+    <input type="text" id="ad" name="full_name" required minlength="2" maxlength="150"
+           value="{{ profil.full_name }}">
+  </div>
+
+  <div class="alan">
+    <label for="unvan">Unvan</label>
+    <input type="text" id="unvan" name="title" maxlength="200" value="{{ profil.title }}"
+           placeholder="Yazılım Mühendisi" aria-describedby="unvan-ipucu">
+    <span class="ipucu" id="unvan-ipucu">Anasayfada adınızın üstünde görünür.</span>
+  </div>
+
+  <div class="alan">
+    <label for="slogan">Kısa tanıtım</label>
+    <textarea id="slogan" name="tagline" maxlength="300" style="min-height:4.5rem"
+              aria-describedby="slogan-ipucu">{{ profil.tagline }}</textarea>
+    <span class="ipucu" id="slogan-ipucu">
+      Anasayfa girişi ve arama sonuçlarındaki açıklama olarak kullanılır. 160 karakter idealdir.
+    </span>
+  </div>
+
+  <div class="alan">
+    <label for="biyografi">Biyografi (Markdown)</label>
+    <textarea id="biyografi" name="bio_md" class="kod" style="min-height:14rem">{{ profil.bio_md }}</textarea>
+  </div>
+
+  <div class="alan">
+    <label for="avatar">Profil fotoğrafı adresi</label>
+    <input type="url" id="avatar" name="avatar_url" maxlength="500"
+           value="{{ profil.avatar_url or '' }}" placeholder="/media/portre.jpg veya https://…">
+  </div>
+
+  <div class="alan">
+    <label for="eposta">E-posta</label>
+    <input type="email" id="eposta" name="email" maxlength="255" value="{{ profil.email or '' }}">
+  </div>
+
+  <div class="alan">
+    <label for="telefon">Telefon</label>
+    <input type="text" id="telefon" name="phone" maxlength="50" value="{{ profil.phone or '' }}">
+  </div>
+
+  <div class="alan">
+    <label for="konum">Konum</label>
+    <input type="text" id="konum" name="location" maxlength="150"
+           value="{{ profil.location or '' }}" placeholder="İstanbul, Türkiye">
+  </div>
+
+  <fieldset style="border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;display:grid;gap:1rem">
+    <legend style="padding-inline:0.5rem;font-weight:600;font-size:0.92rem">Sosyal medya</legend>
+    {% for anahtar, etiket in sosyal_alanlar %}
+    <div class="alan">
+      <label for="sosyal-{{ anahtar }}">{{ etiket }}</label>
+      <input type="url" id="sosyal-{{ anahtar }}" name="sosyal_{{ anahtar }}" maxlength="300"
+             value="{{ profil.socials.get(anahtar, '') }}">
+    </div>
+    {% endfor %}
+  </fieldset>
+
+  <div class="dugme-sirasi" style="margin-top:0.5rem">
+    <button type="submit" class="dugme">Kaydet</button>
+  </div>
+</form>
+
+<section aria-labelledby="parola-baslik"
+         style="margin-top:3rem;padding-top:1.75rem;border-top:1px solid var(--border)">
+  <h2 id="parola-baslik" style="margin-top:0">Parola değiştir</h2>
+  <form class="form" method="post" action="/panel/parola">
+    <div class="alan">
+      <label for="mevcut">Mevcut parola</label>
+      <input type="password" id="mevcut" name="mevcut_parola" required
+             autocomplete="current-password" minlength="6">
+    </div>
+    <div class="alan">
+      <label for="yeni">Yeni parola</label>
+      <input type="password" id="yeni" name="yeni_parola" required
+             autocomplete="new-password" minlength="8" aria-describedby="parola-ipucu">
+      <span class="ipucu" id="parola-ipucu">En az 8 karakter.</span>
+    </div>
+    <div class="alan">
+      <label for="yeni2">Yeni parola (tekrar)</label>
+      <input type="password" id="yeni2" name="yeni_parola_tekrar" required
+             autocomplete="new-password" minlength="8">
+    </div>
+    <div><button type="submit" class="dugme">Parolayı değiştir</button></div>
+  </form>
+</section>
+{% endblock %}

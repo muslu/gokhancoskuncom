@@ -1,0 +1,104 @@
+{% extends "panel/taban.html" %}
+{% block title %}{{ 'Yeni yazı' if yeni else yazi.title }}{% endblock %}
+
+{% block content %}
+<div class="panel-baslik">
+  <h1>{{ 'Yeni yazı' if yeni else 'Yazıyı düzenle' }}</h1>
+  {% if not yeni %}
+  <div class="islemler" style="display:flex;gap:0.5rem;flex-wrap:wrap">
+    <a class="dugme dugme-ikincil" href="/blog/{{ yazi.slug }}" target="_blank" rel="noopener">
+      Önizle<span class="gorsel-gizli"> (yeni sekmede açılır)</span>
+    </a>
+    <a class="dugme dugme-ikincil" href="/panel/yazilar">Listeye dön</a>
+  </div>
+  {% endif %}
+</div>
+
+<form class="form form-genis" method="post"
+      action="{{ '/panel/yazilar/yeni' if yeni else '/panel/yazilar/' ~ yazi.slug }}">
+
+  <div class="alan">
+    <label for="baslik">Başlık <span aria-hidden="true">*</span></label>
+    <input type="text" id="baslik" name="title" required minlength="3" maxlength="220"
+           value="{{ yazi.title or '' }}" autofocus>
+  </div>
+
+  {% if not yeni %}
+  <div class="alan">
+    <label for="slug">Kalıcı bağlantı (slug)</label>
+    <input type="text" id="slug" name="slug" value="{{ yazi.slug }}" readonly
+           aria-describedby="slug-ipucu">
+    <span class="ipucu" id="slug-ipucu">
+      Adres: {{ site_url }}/blog/{{ yazi.slug }} — SEO'yu bozmamak için değiştirilemez.
+    </span>
+  </div>
+  {% endif %}
+
+  <div class="alan">
+    <label for="ozet">Özet</label>
+    <textarea id="ozet" name="summary" maxlength="500" style="min-height:5rem"
+              aria-describedby="ozet-ipucu">{{ yazi.summary or '' }}</textarea>
+    <span class="ipucu" id="ozet-ipucu">Boş bırakılırsa içerikten otomatik üretilir (en fazla 500 karakter).</span>
+  </div>
+
+  <div class="alan">
+    <label for="icerik">İçerik (Markdown) <span aria-hidden="true">*</span></label>
+    <textarea id="icerik" name="content_md" class="kod" required
+              aria-describedby="icerik-ipucu">{{ yazi.content_md or '' }}</textarea>
+    <span class="ipucu" id="icerik-ipucu">
+      Markdown desteklenir: <code>## Başlık</code>, <code>**kalın**</code>, <code>[bağlantı](adres)</code>,
+      <code>```kod```</code>, tablo, liste. HTML güvenlik için temizlenir.
+    </span>
+  </div>
+
+  <div class="alan">
+    <label for="etiketler">Etiketler</label>
+    <input type="text" id="etiketler" name="tags" value="{{ yazi.tags | join(', ') if yazi.tags else '' }}"
+           aria-describedby="etiket-ipucu" placeholder="python, fastapi, web">
+    <span class="ipucu" id="etiket-ipucu">Virgülle ayırın, en fazla 12 etiket.</span>
+  </div>
+
+  <div class="alan">
+    <label for="kapak">Kapak görseli adresi</label>
+    <input type="url" id="kapak" name="cover_image" value="{{ yazi.cover_image or '' }}"
+           maxlength="500" placeholder="/media/kapak.jpg veya https://…">
+  </div>
+
+  <div class="alan">
+    <label for="meta">Meta açıklama (SEO)</label>
+    <input type="text" id="meta" name="meta_description" maxlength="300"
+           value="{{ yazi.meta_description or '' }}" aria-describedby="meta-ipucu">
+    <span class="ipucu" id="meta-ipucu">Arama sonuçlarında görünür. Boşsa özet kullanılır. 160 karakter idealdir.</span>
+  </div>
+
+  <div class="alan">
+    <label for="durum">Durum</label>
+    <select id="durum" name="status">
+      <option value="draft" {% if (yazi.status or 'draft') == 'draft' %}selected{% endif %}>Taslak</option>
+      <option value="published" {% if yazi.status == 'published' %}selected{% endif %}>Yayında</option>
+    </select>
+  </div>
+
+  <div class="onay">
+    <input type="checkbox" id="one_cikan" name="is_featured" value="1"
+           {% if yazi.is_featured %}checked{% endif %}>
+    <label for="one_cikan">Anasayfada öne çıkar</label>
+  </div>
+
+  <div class="dugme-sirasi" style="margin-top:0.5rem">
+    <button type="submit" class="dugme">{{ 'Oluştur' if yeni else 'Değişiklikleri kaydet' }}</button>
+    <a class="dugme dugme-ikincil" href="/panel/yazilar">Vazgeç</a>
+  </div>
+</form>
+
+{% if not yeni %}
+<section aria-labelledby="tehlike-baslik" style="margin-top:3rem;padding-top:1.75rem;border-top:1px solid var(--border)">
+  <h2 id="tehlike-baslik" style="margin-top:0">Tehlikeli bölge</h2>
+  <p style="color:var(--fg-mute);font-size:0.92rem">Silinen yazı geri getirilemez.</p>
+  <form method="post" action="/panel/yazilar/{{ yazi.slug }}/sil"
+        data-onay="“{{ yazi.title }}” kalıcı olarak silinecek. Emin misiniz?">
+    <button type="submit" class="dugme dugme-tehlike">Bu yazıyı sil</button>
+  </form>
+</section>
+{% endif %}
+{% endblock %}

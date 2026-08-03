@@ -1,0 +1,68 @@
+{% extends "panel/taban.html" %}
+{% block title %}Sayfalar{% endblock %}
+
+{% block content %}
+<div class="panel-baslik">
+  <h1>Sayfalar</h1>
+</div>
+
+<p style="color:var(--fg-mute);font-size:0.94rem;max-width:44rem">
+  Hakkımda ve İletişim gibi sabit sayfaların içeriğini buradan düzenleyebilirsiniz.
+  İçerik Markdown olarak yazılır ve menüde görünme sırası ayarlanabilir.
+</p>
+
+{% for sayfa in sayfalar %}
+<section aria-labelledby="sayfa-{{ sayfa.slug }}"
+         style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+  <h2 id="sayfa-{{ sayfa.slug }}" style="margin-top:0">
+    {{ sayfa.title }}
+    <span class="rozet rozet-sessiz">/{{ sayfa.slug }}</span>
+  </h2>
+
+  <form class="form form-genis" method="post" action="/panel/sayfalar/{{ sayfa.slug }}">
+    <div class="alan">
+      <label for="baslik-{{ sayfa.slug }}">Başlık</label>
+      <input type="text" id="baslik-{{ sayfa.slug }}" name="title" required
+             maxlength="200" value="{{ sayfa.title }}">
+    </div>
+
+    <div class="alan">
+      <label for="icerik-{{ sayfa.slug }}">İçerik (Markdown)</label>
+      <textarea id="icerik-{{ sayfa.slug }}" name="content_md" class="kod"
+                style="min-height:18rem">{{ sayfa.content_md }}</textarea>
+    </div>
+
+    <div class="alan">
+      <label for="meta-{{ sayfa.slug }}">Meta açıklama (SEO)</label>
+      <input type="text" id="meta-{{ sayfa.slug }}" name="meta_description"
+             maxlength="300" value="{{ sayfa.meta_description or '' }}">
+    </div>
+
+    <div class="alan" style="max-width:9rem">
+      <label for="sira-{{ sayfa.slug }}">Menü sırası</label>
+      <input type="number" id="sira-{{ sayfa.slug }}" name="sort_order"
+             min="0" max="999" value="{{ sayfa.sort_order }}">
+    </div>
+
+    <div class="onay">
+      <input type="checkbox" id="yayin-{{ sayfa.slug }}" name="is_published" value="1"
+             {% if sayfa.is_published %}checked{% endif %}>
+      <label for="yayin-{{ sayfa.slug }}">Yayında</label>
+    </div>
+
+    <div class="onay">
+      <input type="checkbox" id="menu-{{ sayfa.slug }}" name="show_in_menu" value="1"
+             {% if sayfa.show_in_menu %}checked{% endif %}>
+      <label for="menu-{{ sayfa.slug }}">Menüde göster</label>
+    </div>
+
+    <div class="dugme-sirasi" style="margin-top:0.5rem">
+      <button type="submit" class="dugme">Kaydet</button>
+      <a class="dugme dugme-ikincil" href="/{{ sayfa.slug }}" target="_blank" rel="noopener">
+        Görüntüle<span class="gorsel-gizli"> (yeni sekmede açılır)</span>
+      </a>
+    </div>
+  </form>
+</section>
+{% endfor %}
+{% endblock %}

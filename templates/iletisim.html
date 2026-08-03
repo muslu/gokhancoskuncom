@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ sayfa.title }} — {{ profil.full_name }}{% endblock %}
+{% block description %}{{ sayfa.meta_description or (profil.full_name ~ " ile iletişime geçin.") }}{% endblock %}
+{% block canonical %}{{ site_url }}/iletisim{% endblock %}
+
+{% block jsonld %}
+<script type="application/ld+json">
+{{ {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": sayfa.title,
+  "url": site_url ~ "/iletisim",
+  "inLanguage": "tr-TR",
+  "isPartOf": {"@id": site_url ~ "/#site"},
+  "mainEntity": {"@id": site_url ~ "/#kisi"},
+  "breadcrumb": {"@type": "BreadcrumbList", "itemListElement": kirinti_ogeleri}
+} | jsonld }}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="dar">
+  <h1>{{ sayfa.title }}</h1>
+
+  {% if sayfa.content_html %}
+  <div class="icerik" style="margin-bottom:2rem">{{ sayfa.content_html | safe }}</div>
+  {% endif %}
+
+  {% if profil.email or profil.phone or profil.location %}
+  <ul style="list-style:none;padding:0;margin:0 0 2.5rem;display:grid;gap:0.5rem">
+    {% if profil.email %}
+    <li class="metin"><strong>E-posta:</strong> <a href="mailto:{{ profil.email }}">{{ profil.email }}</a></li>
+    {% endif %}
+    {% if profil.phone %}
+    <li class="metin"><strong>Telefon:</strong> <a href="tel:{{ profil.phone | replace(' ', '') }}">{{ profil.phone }}</a></li>
+    {% endif %}
+    {% if profil.location %}
+    <li><strong>Konum:</strong> {{ profil.location }}</li>
+    {% endif %}
+  </ul>
+  {% endif %}
+
+  {% if durum == 'basarili' %}
+  <div class="uyari uyari-basari" role="status">
+    <strong>Mesajınız alındı.</strong> En kısa sürede size dönüş yapılacaktır.
+  </div>
+  {% elif durum == 'hata' %}
+  <div class="uyari uyari-hata" role="alert">
+    <strong>Mesaj gönderilemedi.</strong> {{ hata_mesaji or "Lütfen alanları kontrol edip tekrar deneyin." }}
+  </div>
+  {% endif %}
+
+  <h2 style="margin-top:0">Mesaj gönderin</h2>
+  <form class="form" id="iletisim-form" method="post" action="/iletisim">
+    <div class="alan">
+      <label for="ad">Adınız <span aria-hidden="true">*</span></label>
+      <input type="text" id="ad" name="name" required minlength="2" maxlength="150"
+             autocomplete="name" value="{{ eski.name or '' }}">
+    </div>
+
+    <div class="alan">
+      <label for="eposta">E-posta adresiniz <span aria-hidden="true">*</span></label>
+      <input type="email" id="eposta" name="email" required maxlength="255"
+             autocomplete="email" value="{{ eski.email or '' }}">
+    </div>
+
+    <div class="alan">
+      <label for="konu">Konu</label>
+      <input type="text" id="konu" name="subject" maxlength="200" value="{{ eski.subject or '' }}">
+    </div>
+
+    <div class="alan">
+      <label for="mesaj">Mesajınız <span aria-hidden="true">*</span></label>
+      <textarea id="mesaj" name="message" required minlength="10" maxlength="5000"
+                aria-describedby="mesaj-ipucu">{{ eski.message or '' }}</textarea>
+      <span class="ipucu" id="mesaj-ipucu">En az 10, en fazla 5000 karakter.</span>
+    </div>
+
+    {# --- Bot korumasi: captcha yok, uc katman var (bkz. src/services/bot_koruma.py) --- #}
+
+    {# 1) Honeypot — gercek kullanicilardan ve ekran okuyucudan gizli #}
+    <div class="gorsel-gizli" aria-hidden="true">
+      <label for="website">Bu alanı boş bırakın</label>
+      <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+    </div>
+
+    {# 2) Formun render edildigi ani tasiyan imzali token — cok hizli ya da
+         cok eski gonderimler sunucuda reddedilir. Ziyaretci hicbir sey yapmaz. #}
+    <input type="hidden" name="form_token" value="{{ form_token }}">
+
+    <p class="ipucu" style="margin:0">
+      <span aria-hidden="true">*</span> ile işaretli alanlar zorunludur.
+    </p>
+
+    <div><button type="submit" class="dugme">Mesajı gönder</button></div>
+  </form>
+</div>
+{% endblock %}

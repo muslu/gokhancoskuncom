@@ -1,0 +1,26 @@
+{# Sayfalama. `taban` sorgu dizesiz temel yol (or. /blog) #}
+{% if toplam_sayfa > 1 %}
+<nav aria-label="Sayfalar">
+  <ul class="sayfalama">
+    {% if sayfa > 1 %}
+    <li><a href="{{ taban }}{% if sayfa - 1 > 1 %}?sayfa={{ sayfa - 1 }}{% endif %}" rel="prev">‹ Önceki</a></li>
+    {% endif %}
+
+    {% for n in range(1, toplam_sayfa + 1) %}
+      {% if n == 1 or n == toplam_sayfa or (n >= sayfa - 1 and n <= sayfa + 1) %}
+        {% if n == sayfa %}
+        <li><span aria-current="page"><span class="gorsel-gizli">Sayfa </span>{{ n }}</span></li>
+        {% else %}
+        <li><a href="{{ taban }}{% if n > 1 %}?sayfa={{ n }}{% endif %}"><span class="gorsel-gizli">Sayfa </span>{{ n }}</a></li>
+        {% endif %}
+      {% elif n == sayfa - 2 or n == sayfa + 2 %}
+        <li><span class="bosluk" aria-hidden="true">…</span></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if sayfa < toplam_sayfa %}
+    <li><a href="{{ taban }}?sayfa={{ sayfa + 1 }}" rel="next">Sonraki ›</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}

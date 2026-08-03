@@ -1,0 +1,44 @@
+[Unit]
+Description=gokhancoskun.com FastAPI (gunicorn + uvicorn worker)
+After=network.target postgresql.service valkey-server.service
+Wants=postgresql.service valkey-server.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/gokhancoskun
+EnvironmentFile=/opt/gokhancoskun/.env
+ExecStart=/opt/gokhancoskun/venv/bin/gunicorn main:app \
+    -k uvicorn.workers.UvicornWorker \
+    -w 2 -b 127.0.0.1:8002 \
+    --timeout 60 --graceful-timeout 20 --keep-alive 5 \
+    --access-logfile - --error-logfile -
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=always
+RestartSec=3
+
+# --- Sertlestirme ---
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=false
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+ReadWritePaths=/opt/gokhancoskun/media
+PrivateTmp=true
+
+# --- Kaynak limitleri ---
+LimitNOFILE=65535
+OOMScoreAdjust=-100
+MemoryMax=1G
+
+[Install]
+WantedBy=multi-user.target

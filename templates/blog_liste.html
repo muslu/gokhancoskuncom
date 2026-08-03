@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}{{ baslik }} — {{ profil.full_name }}{% endblock %}
+{% block description %}{{ aciklama }}{% endblock %}
+{% block canonical %}{{ site_url }}{{ taban }}{% if sayfa > 1 %}?sayfa={{ sayfa }}{% endif %}{% endblock %}
+
+{% block head_extra %}
+{% if sayfa > 1 %}<link rel="prev" href="{{ site_url }}{{ taban }}{% if sayfa - 1 > 1 %}?sayfa={{ sayfa - 1 }}{% endif %}">{% endif %}
+{% if sayfa < toplam_sayfa %}<link rel="next" href="{{ site_url }}{{ taban }}?sayfa={{ sayfa + 1 }}">{% endif %}
+{% endblock %}
+
+{% block jsonld %}
+<script type="application/ld+json">
+{{ {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": baslik,
+  "description": aciklama,
+  "url": site_url ~ taban,
+  "inLanguage": "tr-TR",
+  "isPartOf": {"@id": site_url ~ "/#site"},
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": kirinti_ogeleri
+  }
+} | jsonld }}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="kabuk">
+
+  <header>
+    <h1>{{ baslik }}</h1>
+    <p class="giris">{{ aciklama }}</p>
+  </header>
+
+  <form class="form" action="/blog" method="get" role="search" style="max-width:28rem;margin-bottom:2rem">
+    <div class="alan">
+      <label for="ara">Yazılarda ara</label>
+      <input type="text" id="ara" name="ara" value="{{ arama or '' }}"
+             placeholder="Anahtar kelime…" autocomplete="off">
+    </div>
+    <div><button type="submit" class="dugme dugme-ikincil">Ara</button></div>
+  </form>
+
+  {% if etiketler %}
+  <nav aria-label="Etiketler" style="margin-bottom:2rem">
+    <ul class="etiketler">
+      {% for e in etiketler %}
+      <li><a href="/etiket/{{ e.slug }}">{{ e.name }} <span class="gorsel-gizli">—</span> {{ e.post_count }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  {% if yazilar %}
+  <ul class="kart-izgara">
+    {% for yazi in yazilar %}
+      {% with baslik_seviyesi = 'h2' %}{% include "partials/yazi_kart.html" %}{% endwith %}
+    {% endfor %}
+  </ul>
+  {% include "partials/sayfalama.html" %}
+  {% else %}
+  <p class="bos">
+    {% if arama %}“{{ arama }}” için sonuç bulunamadı.{% else %}Henüz yayınlanmış bir yazı yok.{% endif %}
+  </p>
+  {% endif %}
+
+</div>
+{% endblock %}

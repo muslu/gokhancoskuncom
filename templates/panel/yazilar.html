@@ -1,0 +1,88 @@
+{% extends "panel/taban.html" %}
+{% block title %}Yazılar{% endblock %}
+
+{% block content %}
+<div class="panel-baslik">
+  <h1>Yazılar</h1>
+  <a class="dugme" href="/panel/yazilar/yeni">Yeni yazı</a>
+</div>
+
+<form method="get" action="/panel/yazilar"
+      style="display:flex;gap:0.7rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1.75rem">
+  <div class="alan" style="flex:1 1 14rem">
+    <label for="ara">Ara</label>
+    <input type="text" id="ara" name="ara" value="{{ arama or '' }}" placeholder="Başlık veya içerik…">
+  </div>
+  <div class="alan" style="flex:0 1 11rem">
+    <label for="durum">Durum</label>
+    <select id="durum" name="durum">
+      <option value="">Tümü</option>
+      <option value="published" {% if durum == 'published' %}selected{% endif %}>Yayında</option>
+      <option value="draft" {% if durum == 'draft' %}selected{% endif %}>Taslak</option>
+    </select>
+  </div>
+  <div><button type="submit" class="dugme dugme-ikincil">Filtrele</button></div>
+</form>
+
+{% if yazilar %}
+<div class="tablo-sarmal">
+  <table class="tablo">
+    <caption class="gorsel-gizli">Tüm yazılar</caption>
+    <thead>
+      <tr>
+        <th scope="col">Başlık</th>
+        <th scope="col">Durum</th>
+        <th scope="col">Etiketler</th>
+        <th scope="col">Görüntülenme</th>
+        <th scope="col">Güncelleme</th>
+        <th scope="col">İşlemler</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for yazi in yazilar %}
+      <tr>
+        <td>
+          <a href="/panel/yazilar/{{ yazi.slug }}">{{ yazi.title }}</a>
+          {% if yazi.is_featured %}<span class="rozet rozet-sessiz">Öne çıkan</span>{% endif %}
+        </td>
+        <td>
+          {% if yazi.status == 'published' %}
+          <span class="rozet rozet-yayin">Yayında</span>
+          {% else %}
+          <span class="rozet rozet-taslak">Taslak</span>
+          {% endif %}
+        </td>
+        <td style="font-size:0.86rem;color:var(--fg-mute)">{{ yazi.tags | join(', ') or '—' }}</td>
+        <td style="font-variant-numeric:tabular-nums">{{ yazi.view_count }}</td>
+        <td>{{ yazi.updated_at | tarih(kisa=True) }}</td>
+        <td>
+          <div class="islemler">
+            <a class="dugme dugme-ikincil" href="/panel/yazilar/{{ yazi.slug }}">Düzenle</a>
+            <form method="post" action="/panel/yazilar/{{ yazi.slug }}/durum" style="display:inline">
+              <input type="hidden" name="status"
+                     value="{{ 'draft' if yazi.status == 'published' else 'published' }}">
+              <button type="submit" class="dugme dugme-ikincil">
+                {{ 'Taslağa al' if yazi.status == 'published' else 'Yayınla' }}
+              </button>
+            </form>
+            {# CSP `script-src 'self'` satir ici onsubmit'i bloklar —
+               onay data-* niteligi ile site.js'ten baglanir. #}
+            <form method="post" action="/panel/yazilar/{{ yazi.slug }}/sil" style="display:inline"
+                  data-onay="“{{ yazi.title }}” kalıcı olarak silinecek. Emin misiniz?">
+              <button type="submit" class="dugme dugme-tehlike">
+                Sil<span class="gorsel-gizli"> — {{ yazi.title }}</span>
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% with taban = '/panel/yazilar' %}{% include "partials/sayfalama.html" %}{% endwith %}
+{% else %}
+<p class="bos">Kriterlere uyan yazı bulunamadı.</p>
+{% endif %}
+{% endblock %}

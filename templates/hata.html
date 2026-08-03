@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{{ kod }} — {{ baslik }}{% endblock %}
+{% block description %}{{ aciklama }}{% endblock %}
+{% block head_extra %}<meta name="robots" content="noindex, follow">{% endblock %}
+
+{% block content %}
+<div class="dar" style="text-align:center;padding-block:clamp(2rem,8vw,5rem)">
+  <p class="kahraman-unvan">Hata {{ kod }}</p>
+  <h1>{{ baslik }}</h1>
+  <p class="giris" style="margin-inline:auto">{{ aciklama }}</p>
+  <div class="dugme-sirasi" style="justify-content:center">
+    <a class="dugme" href="/">Anasayfaya dön</a>
+    <a class="dugme dugme-ikincil" href="/blog">Yazılara göz at</a>
+  </div>
+</div>
+{% endblock %}

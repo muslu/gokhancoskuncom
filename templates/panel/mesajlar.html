@@ -1,0 +1,48 @@
+{% extends "panel/taban.html" %}
+{% block title %}Mesajlar{% endblock %}
+
+{% block content %}
+<div class="panel-baslik">
+  <h1>İletişim mesajları</h1>
+</div>
+
+{% if mesajlar %}
+<ul style="list-style:none;padding:0;margin:0;display:grid;gap:1rem">
+  {% for m in mesajlar %}
+  <li class="kart" style="{% if not m.is_read %}border-left:3px solid var(--brand-ui){% endif %}">
+    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:baseline;justify-content:space-between">
+      <h2 style="margin:0;font-size:1.05rem">
+        {{ m.subject or 'Konusuz mesaj' }}
+        {% if not m.is_read %}<span class="rozet">Yeni</span>{% endif %}
+      </h2>
+      <time datetime="{{ m.created_at.isoformat() }}" class="ustveri" style="margin:0">
+        {{ m.created_at | tarih }}
+      </time>
+    </div>
+
+    <p class="ustveri metin" style="margin:0">
+      <strong>{{ m.name }}</strong>
+      <span aria-hidden="true">·</span>
+      <a href="mailto:{{ m.email }}">{{ m.email }}</a>
+    </p>
+
+    <p style="white-space:pre-wrap;margin:0.5rem 0 0">{{ m.message }}</p>
+
+    <div class="dugme-sirasi" style="margin-top:0.75rem">
+      <a class="dugme dugme-ikincil"
+         href="mailto:{{ m.email }}?subject={{ ('Re: ' ~ (m.subject or '')) | urlencode }}">Yanıtla</a>
+      {% if not m.is_read %}
+      <form method="post" action="/panel/mesajlar/{{ m.id }}/okundu">
+        <button type="submit" class="dugme dugme-ikincil">
+          Okundu işaretle<span class="gorsel-gizli"> — {{ m.name }} tarafından gönderilen mesaj</span>
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="bos">Henüz mesaj yok.</p>
+{% endif %}
+{% endblock %}

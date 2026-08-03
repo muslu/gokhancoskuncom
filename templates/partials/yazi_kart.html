@@ -1,0 +1,28 @@
+{# Yazi karti. `baslik_seviyesi` cagiran sayfaya gore h2/h3 secilir —
+   bilesen hem bolum icinde hem ust duzeyde kullanildigi icin seviye atlamaz. #}
+{% set hs = baslik_seviyesi | default('h3') %}
+<li class="kart">
+  {% if yazi.cover_image %}
+  <img class="kart-ust-resim" src="{{ yazi.cover_image }}" alt="" loading="lazy" decoding="async"
+       width="640" height="360">
+  {% endif %}
+  <{{ hs }}><a href="/blog/{{ yazi.slug }}">{{ yazi.title }}</a></{{ hs }}>
+  <p class="ustveri">
+    {% if yazi.published_at %}
+    <time datetime="{{ yazi.published_at.isoformat() }}">{{ yazi.published_at | tarih }}</time>
+    <span aria-hidden="true">·</span>
+    {% endif %}
+    <span>{{ yazi.reading_minutes }} dk okuma</span>
+    {% if yazi.status == 'draft' %}
+    <span aria-hidden="true">·</span><span class="rozet rozet-taslak">Taslak</span>
+    {% endif %}
+  </p>
+  {% if yazi.summary %}<p>{{ yazi.summary }}</p>{% endif %}
+  {% if yazi.tags %}
+  <ul class="etiketler">
+    {% for etiket in yazi.tags[:4] %}
+    <li><a href="/etiket/{{ etiket | slugla }}">{{ etiket }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</li>

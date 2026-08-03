@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profil.full_name }}{% if profil.title %} — {{ profil.title }}{% endif %}{% endblock %}
+{% block description %}{{ profil.tagline or (profil.full_name ~ " kişisel sitesi ve blogu.") }}{% endblock %}
+{% block canonical %}{{ site_url }}/{% endblock %}
+
+{% block jsonld %}
+<script type="application/ld+json">
+{{ {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": site_url ~ "/#kisi",
+      "name": profil.full_name,
+      "jobTitle": profil.title,
+      "description": profil.tagline,
+      "url": site_url,
+      "image": (profil.avatar_url if profil.avatar_url and profil.avatar_url.startswith("http") else (site_url ~ profil.avatar_url if profil.avatar_url else None)),
+      "email": ("mailto:" ~ profil.email) if profil.email else None,
+      "address": {"@type": "PostalAddress", "addressLocality": profil.location} if profil.location else None,
+      "sameAs": profil.socials.values() | list if profil.socials else None
+    },
+    {
+      "@type": "WebSite",
+      "@id": site_url ~ "/#site",
+      "url": site_url,
+      "name": profil.full_name,
+      "inLanguage": "tr-TR",
+      "publisher": {"@id": site_url ~ "/#kisi"}
+    },
+    {
+      "@type": "WebPage",
+      "@id": site_url ~ "/#sayfa",
+      "url": site_url ~ "/",
+      "name": profil.full_name,
+      "isPartOf": {"@id": site_url ~ "/#site"},
+      "about": {"@id": site_url ~ "/#kisi"}
+    }
+  ]
+} | jsonld }}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="kabuk">
+
+  <section class="kahraman">
+    <div>
+      {% if profil.title %}<p class="kahraman-unvan">{{ profil.title }}</p>{% endif %}
+      <h1>{{ profil.full_name }}</h1>
+      {% if profil.tagline %}<p class="giris">{{ profil.tagline }}</p>{% endif %}
+
+      <div class="dugme-sirasi">
+        <a class="dugme" href="/blog">Yazıları oku</a>
+        {% if 'iletisim' in menu_sayfalari | map(attribute='slug') | list %}
+        <a class="dugme dugme-ikincil" href="/iletisim">İletişime geç</a>
+        {% endif %}
+      </div>
+
+      {% if profil.socials %}
+      <ul class="sosyal">
+        {% for ad, adres in profil.socials.items() %}
+        <li><a href="{{ adres }}" rel="me noopener" target="_blank">
+          {{ ad | sosyal_ad }}<span class="gorsel-gizli"> (yeni sekmede açılır)</span>
+        </a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+
+    {% if profil.avatar_url %}
+    <img class="avatar" src="{{ profil.avatar_url }}" alt="{{ profil.full_name }} portre fotoğrafı"
+         width="320" height="320" fetchpriority="high" decoding="async">
+    {% endif %}
+  </section>
+
+  <figure class="cnc-figur">
+    {% include "partials/cnc_animasyon.html" %}
+    <figcaption>
+      4 eksenli işleme merkezi: <strong>X</strong>, <strong>Y</strong>, <strong>Z</strong>
+      doğrusal eksenler ve iş parçasını döndüren <strong>A</strong> döner ekseni.
+    </figcaption>
+  </figure>
+
+  {% if profil.bio_html %}
+  <section aria-labelledby="ozet-baslik">
+    <h2 id="ozet-baslik">Kısaca</h2>
+    <div class="icerik">{{ profil.bio_html | safe }}</div>
+  </section>
+  {% endif %}
+
+  {% if one_cikanlar %}
+  <section aria-labelledby="one-cikan-baslik">
+    <h2 id="one-cikan-baslik">Öne çıkan yazılar</h2>
+    <ul class="kart-izgara">
+      {% for yazi in one_cikanlar %}
+        {% include "partials/yazi_kart.html" %}
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  <section aria-labelledby="son-yazilar-baslik">
+    <h2 id="son-yazilar-baslik">Son yazılar</h2>
+    {% if son_yazilar %}
+    <ul class="kart-izgara">
+      {% for yazi in son_yazilar %}
+        {% include "partials/yazi_kart.html" %}
+      {% endfor %}
+    </ul>
+    <div class="dugme-sirasi">
+      <a class="dugme dugme-ikincil" href="/blog">Tüm yazılar</a>
+    </div>
+    {% else %}
+    <p class="bos">Henüz yayınlanmış bir yazı yok.</p>
+    {% endif %}
+  </section>
+
+</div>
+{% endblock %}

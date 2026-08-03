@@ -1,0 +1,43 @@
+{% extends "panel/taban.html" %}
+{% block title %}Denetim kaydı{% endblock %}
+
+{% block content %}
+<div class="panel-baslik">
+  <h1>Denetim kaydı</h1>
+</div>
+
+<p style="color:var(--fg-mute);font-size:0.94rem">Son {{ kayitlar | length }} işlem gösteriliyor.</p>
+
+{% if kayitlar %}
+<div class="tablo-sarmal">
+  <table class="tablo">
+    <caption class="gorsel-gizli">Sistemde yapılan işlemler</caption>
+    <thead>
+      <tr>
+        <th scope="col">Tarih</th>
+        <th scope="col">Kim</th>
+        <th scope="col">İşlem</th>
+        <th scope="col">Nesne</th>
+        <th scope="col">IP</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for k in kayitlar %}
+      <tr>
+        <td style="white-space:nowrap">
+          <time datetime="{{ k.created_at.isoformat() }}">{{ k.created_at | tarih(kisa=True) }}</time>
+          <span style="color:var(--fg-mute)">{{ k.created_at.strftime('%H:%M') }}</span>
+        </td>
+        <td>{{ k.actor }} <span class="rozet rozet-sessiz">{{ k.actor_type }}</span></td>
+        <td>{{ k.action }}</td>
+        <td style="font-size:0.86rem">{{ k.entity }}{% if k.entity_id %} <code>{{ k.entity_id }}</code>{% endif %}</td>
+        <td style="font-size:0.84rem;color:var(--fg-mute)">{{ k.ip_address or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="bos">Henüz kayıt yok.</p>
+{% endif %}
+{% endblock %}

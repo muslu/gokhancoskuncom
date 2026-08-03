@@ -216,3 +216,18 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- proje ozel ---
+.mcp.json
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+media/
+venv/
+.idea/
+
+# Yerel test sanal ortami
+.venv-test/

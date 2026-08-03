@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{{ sayfa.title }} — {{ profil.full_name }}{% endblock %}
+{% block description %}{{ sayfa.meta_description or (sayfa.title ~ " — " ~ profil.full_name) }}{% endblock %}
+{% block canonical %}{{ site_url }}/{{ sayfa.slug }}{% endblock %}
+
+{% block jsonld %}
+<script type="application/ld+json">
+{{ {
+  "@context": "https://schema.org",
+  "@type": "WebPage" if sayfa.slug != "hakkimda" else "AboutPage",
+  "name": sayfa.title,
+  "description": sayfa.meta_description,
+  "url": site_url ~ "/" ~ sayfa.slug,
+  "inLanguage": "tr-TR",
+  "dateModified": sayfa.updated_at.isoformat(),
+  "isPartOf": {"@id": site_url ~ "/#site"},
+  "about": {"@id": site_url ~ "/#kisi"} if sayfa.slug == "hakkimda" else None,
+  "breadcrumb": {"@type": "BreadcrumbList", "itemListElement": kirinti_ogeleri}
+} | jsonld }}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="dar">
+  <h1>{{ sayfa.title }}</h1>
+
+  {% if sayfa.slug == 'hakkimda' %}
+  <div class="ustveri" style="margin-bottom:2rem">
+    {% if profil.location %}<span>{{ profil.location }}</span>{% endif %}
+    {% if profil.email %}<span aria-hidden="true">·</span>
+      <span class="metin"><a href="mailto:{{ profil.email }}">{{ profil.email }}</a></span>{% endif %}
+  </div>
+  {% endif %}
+
+  <div class="icerik">
+    {% if sayfa.content_html %}
+      {{ sayfa.content_html | safe }}
+    {% else %}
+      <p class="bos">Bu sayfanın içeriği henüz eklenmedi.</p>
+    {% endif %}
+  </div>
+
+  {% if sayfa.slug == 'hakkimda' and profil.socials %}
+  <ul class="sosyal">
+    {% for ad, adres in profil.socials.items() %}
+    <li><a href="{{ adres }}" rel="me noopener" target="_blank">
+      {{ ad | sosyal_ad }}<span class="gorsel-gizli"> (yeni sekmede açılır)</span>
+    </a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% endblock %}

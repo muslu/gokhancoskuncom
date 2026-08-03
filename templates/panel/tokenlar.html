@@ -1,0 +1,115 @@
+{% extends "panel/taban.html" %}
+{% block title %}API / MCP{% endblock %}
+
+{% block content %}
+<div class="panel-baslik">
+  <h1>API / MCP erişimi</h1>
+</div>
+
+<p style="color:var(--fg-mute);font-size:0.94rem;max-width:46rem">
+  MCP sunucusu blog yazılarını buradaki tokenlarla yazar. Token yalnızca üretildiği anda
+  bir kez gösterilir; kaybederseniz yenisini üretmeniz gerekir.
+</p>
+
+{% if yeni_token %}
+<div class="uyari uyari-bilgi" style="margin:1.5rem 0">
+  <p style="margin:0 0 0.6rem"><strong>Token oluşturuldu — bu değeri şimdi kopyalayın.</strong>
+  Bu ekrandan ayrıldığınızda bir daha gösterilmeyecek.</p>
+  <p class="jeton-kutu" style="margin:0 0 0.75rem">{{ yeni_token }}</p>
+  <p style="margin:0;font-size:0.88rem">
+    <code>.env</code> dosyanıza ekleyin: <code>GC_API_TOKEN={{ yeni_token }}</code>
+  </p>
+</div>
+{% endif %}
+
+<section aria-labelledby="yeni-token-baslik">
+  <h2 id="yeni-token-baslik">Yeni token üret</h2>
+  <form class="form" method="post" action="/panel/tokenlar">
+    <div class="alan">
+      <label for="token-ad">Token adı</label>
+      <input type="text" id="token-ad" name="name" required minlength="2" maxlength="100"
+             placeholder="MCP — dizüstü bilgisayar" aria-describedby="token-ad-ipucu">
+      <span class="ipucu" id="token-ad-ipucu">Nerede kullanıldığını hatırlatacak bir ad verin.</span>
+    </div>
+
+    <fieldset style="border:1px solid var(--border);border-radius:var(--radius);padding:1rem;display:grid;gap:0.6rem">
+      <legend style="padding-inline:0.5rem;font-weight:600;font-size:0.92rem">Yetkiler</legend>
+      {% for kapsam, aciklama in kapsamlar %}
+      <div class="onay">
+        <input type="checkbox" id="kapsam-{{ loop.index }}" name="scopes" value="{{ kapsam }}"
+               {% if kapsam in ('posts:read', 'posts:write') %}checked{% endif %}>
+        <label for="kapsam-{{ loop.index }}">{{ aciklama }} <code>{{ kapsam }}</code></label>
+      </div>
+      {% endfor %}
+    </fieldset>
+
+    <div class="alan" style="max-width:12rem">
+      <label for="sure">Geçerlilik (gün)</label>
+      <input type="number" id="sure" name="expires_days" min="1" max="3650"
+             placeholder="Süresiz" aria-describedby="sure-ipucu">
+      <span class="ipucu" id="sure-ipucu">Boş bırakılırsa süresiz.</span>
+    </div>
+
+    <div><button type="submit" class="dugme">Token üret</button></div>
+  </form>
+</section>
+
+<section aria-labelledby="mevcut-token-baslik" style="margin-top:3rem">
+  <h2 id="mevcut-token-baslik">Mevcut tokenlar</h2>
+  {% if tokenlar %}
+  <div class="tablo-sarmal">
+    <table class="tablo">
+      <caption class="gorsel-gizli">Üretilmiş API tokenları</caption>
+      <thead>
+        <tr>
+          <th scope="col">Ad</th>
+          <th scope="col">Ön ek</th>
+          <th scope="col">Yetkiler</th>
+          <th scope="col">Durum</th>
+          <th scope="col">Son kullanım</th>
+          <th scope="col">İşlemler</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in tokenlar %}
+        <tr>
+          <td>{{ t.name }}</td>
+          <td><code>{{ t.token_prefix }}…</code></td>
+          <td style="font-size:0.84rem;color:var(--fg-mute)">{{ t.scopes }}</td>
+          <td>
+            {% if t.is_active %}<span class="rozet rozet-yayin">Aktif</span>
+            {% else %}<span class="rozet rozet-sessiz">İptal</span>{% endif %}
+          </td>
+          <td>{{ t.last_used_at | tarih(kisa=True) if t.last_used_at else '—' }}</td>
+          <td>
+            {% if t.is_active %}
+            <form method="post" action="/panel/tokenlar/{{ t.id }}/iptal"
+                  data-onay="“{{ t.name }}” tokenı iptal edilecek. Bu tokenı kullanan MCP sunucusu çalışmayı durduracak. Emin misiniz?">
+              <button type="submit" class="dugme dugme-tehlike">
+                İptal et<span class="gorsel-gizli"> — {{ t.name }}</span>
+              </button>
+            </form>
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="bos">Henüz token üretilmedi.</p>
+  {% endif %}
+</section>
+
+<section aria-labelledby="mcp-baslik" style="margin-top:3rem">
+  <h2 id="mcp-baslik">MCP kurulumu</h2>
+  <p style="color:var(--fg-mute);font-size:0.94rem">
+    Token ürettikten sonra yerel <code>.env</code> dosyanıza yazın, ardından Claude Code'u
+    proje dizininde yeniden başlatın. Kullanılabilir araçlar:
+    <code>blog_yazisi_olustur</code>, <code>blog_yazisi_guncelle</code>,
+    <code>blog_yazisi_listele</code>, <code>blog_yazisi_yayinla</code>,
+    <code>blog_yazisi_sil</code>, <code>sayfa_guncelle</code>, <code>profil_guncelle</code>.
+  </p>
+  <p class="jeton-kutu">GC_API_BASE={{ panel_url }}<br>GC_API_TOKEN=&lt;ürettiğiniz token&gt;</p>
+</section>
+{% endblock %}

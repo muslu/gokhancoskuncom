@@ -1,0 +1,191 @@
+{# ------------------------------------------------------------------
+   4 eksenli CNC isleme merkezi — animasyonlu SVG (inline)
+
+   Neden inline: site.css'teki global `prefers-reduced-motion` kurali
+   yalnizca ayni belgedeki ogelere isler. <img src="...svg"> ile gomulseydi
+   SVG kendi belgesi olurdu ve hareket-azaltma tercihini kacirirdik.
+
+   Sinif adlari `cnc-` onekli: inline <style> global CSS kapsamina girer.
+   Renkler tema tokenlarindan gelir, boylece acik/koyu temada dogru okunur.
+
+   Olculer: kesici ucun gezinme araligi (X ±72) ve inis derinligi (Z 28)
+   is parcasinin sinirlarina (x 286–436, ust yuzey y 258) gore secildi —
+   talas her zaman parcanin uzerinde cikar, havada degil.
+   ------------------------------------------------------------------ #}
+<svg class="cnc" viewBox="0 0 720 400" role="img"
+     aria-labelledby="cnc-baslik cnc-aciklama" xmlns="http://www.w3.org/2000/svg">
+  <title id="cnc-baslik">4 eksenli CNC işleme merkezi</title>
+  <desc id="cnc-aciklama">Köprü tipi bir CNC tezgâhının animasyonlu şeması:
+    araba X ekseninde yanlara, iş mili Z ekseninde aşağı yukarı, tabla Y ekseninde
+    ileri geri hareket eder; A ekseni silindirik iş parçasını kendi ekseni etrafında
+    döndürür.</desc>
+
+  <style>
+    .cnc { width: 100%; height: auto; }
+
+    .cnc-govde   { fill: var(--surface-2, #f0ece4); stroke: var(--border-strong, #7d7669); stroke-width: 2; }
+    .cnc-koyu    { fill: var(--fg-soft, #413e38); }
+    .cnc-cizgi   { stroke: var(--border-strong, #7d7669); stroke-width: 2; fill: none; }
+    .cnc-ince    { stroke: var(--border, #d9d3c7); stroke-width: 1.5; fill: none; }
+    .cnc-marka   { fill: var(--brand-ui, #a8492a); }
+    .cnc-marka-c { stroke: var(--brand-ui, #a8492a); fill: none; stroke-width: 2; }
+    .cnc-etiket  { fill: var(--fg-mute, #5a564d); font: 600 13px var(--font-sans, sans-serif); }
+    .cnc-eksen   { fill: var(--brand-ui, #a8492a); font: 700 14px var(--font-sans, sans-serif); }
+
+    /* --- Hareketler ---------------------------------------------- */
+    /* X ve Z farkli surelerde: ikisi hic ayni fazda tekrar etmedigi icin
+       kesici her turda baska bir yol izliyor — sabit bir dongu gibi durmuyor. */
+    .cnc-x { animation: cnc-x 11s ease-in-out infinite; }
+    .cnc-z { animation: cnc-z 3.7s ease-in-out infinite; }
+    .cnc-y { animation: cnc-y 9s ease-in-out infinite; }
+
+    /* A ekseni: silindir yuzeyindeki cizgiler surekli akar → donme izlenimi */
+    .cnc-a { animation: cnc-a 2.2s linear infinite; }
+
+    /* Talas: kesici ucundan sicrar, sonerek kaybolur */
+    .cnc-talas {
+      transform-box: fill-box; transform-origin: center;
+      animation: cnc-talas 3.7s ease-out infinite;
+    }
+    .cnc-talas-2 { animation-delay: 0.13s; }
+    .cnc-talas-3 { animation-delay: 0.27s; }
+    .cnc-talas-4 { animation-delay: 0.41s; }
+
+    /* Kesme parlamasi — is mili en asagidayken nabiz gibi */
+    .cnc-isik { animation: cnc-isik 3.7s ease-in-out infinite; }
+
+    @keyframes cnc-x {
+      0%, 100% { transform: translateX(-72px); }
+      50%      { transform: translateX(72px); }
+    }
+    @keyframes cnc-z {
+      0%, 100% { transform: translateY(0); }
+      38%, 72% { transform: translateY(28px); }
+    }
+    @keyframes cnc-y {
+      0%, 100% { transform: translateX(-16px); }
+      50%      { transform: translateX(16px); }
+    }
+    @keyframes cnc-a {
+      from { transform: translateX(0); }
+      to   { transform: translateX(26px); }
+    }
+    @keyframes cnc-talas {
+      0%, 32%  { opacity: 0; transform: translate(0, 0) scale(0.5); }
+      46%      { opacity: 1; }
+      74%, 100% { opacity: 0; transform: translate(28px, -24px) scale(1); }
+    }
+    @keyframes cnc-isik {
+      0%, 30%, 80%, 100% { opacity: 0; }
+      45%, 65%           { opacity: 0.45; }
+    }
+
+    /* Hareket azaltma: tezgah dururken de okunakli bir sema kalir */
+    @media (prefers-reduced-motion: reduce) {
+      .cnc-x, .cnc-z, .cnc-y, .cnc-a, .cnc-talas, .cnc-isik { animation: none; }
+      .cnc-talas, .cnc-isik { opacity: 0; }
+    }
+  </style>
+
+  <defs>
+    <!-- Silindir yuzeyi: akan cizgiler bu alanin disina tasmasin -->
+    <clipPath id="cnc-kirp-parca">
+      <rect x="286" y="258" width="150" height="40" rx="6"/>
+    </clipPath>
+  </defs>
+
+  <!-- ================= Gövde ================= -->
+  <rect class="cnc-govde" x="62" y="330" width="596" height="34" rx="6"/>
+  <line class="cnc-ince" x1="62" y1="347" x2="658" y2="347"/>
+
+  <rect class="cnc-govde" x="92" y="86" width="42" height="244" rx="5"/>
+  <rect class="cnc-govde" x="586" y="86" width="42" height="244" rx="5"/>
+
+  <rect class="cnc-govde" x="92" y="86" width="536" height="42" rx="5"/>
+  <line class="cnc-ince" x1="110" y1="107" x2="610" y2="107"/>
+
+  <!-- ================= Y ekseni: tabla ================= -->
+  <g class="cnc-y">
+    <rect class="cnc-govde" x="196" y="300" width="328" height="30" rx="5"/>
+    <line class="cnc-ince" x1="212" y1="315" x2="508" y2="315"/>
+
+    <!-- A ekseni: solda döner ayna (chuck) -->
+    <!-- Genislik parcanin sol kenarina (x 286) kadar: ayna ile parca arasinda
+         bosluk kalirsa is parcasi havada duruyormus gibi gorunuyor. -->
+    <rect class="cnc-koyu" x="252" y="252" width="36" height="52" rx="5"/>
+    <circle class="cnc-marka-c" cx="268" cy="278" r="9"/>
+
+    <!-- İş parçası — yüzey çizgileri akarak dönüşü anlatır -->
+    <rect class="cnc-govde" x="286" y="258" width="150" height="40" rx="6"/>
+    <g clip-path="url(#cnc-kirp-parca)">
+      <g class="cnc-a">
+        <!-- Desen 26px araliklarla ve sinirlarin disina tasarak cizilir:
+             kayma bir periyodu tamamladiginda dikis yeri gorunmez. -->
+        <line class="cnc-ince" x1="286" y1="256" x2="273" y2="300"/>
+        <line class="cnc-ince" x1="312" y1="256" x2="299" y2="300"/>
+        <line class="cnc-ince" x1="338" y1="256" x2="325" y2="300"/>
+        <line class="cnc-ince" x1="364" y1="256" x2="351" y2="300"/>
+        <line class="cnc-ince" x1="390" y1="256" x2="377" y2="300"/>
+        <line class="cnc-ince" x1="416" y1="256" x2="403" y2="300"/>
+        <line class="cnc-ince" x1="442" y1="256" x2="429" y2="300"/>
+      </g>
+    </g>
+
+    <!-- A ekseni: sağda punta (tailstock) -->
+    <rect class="cnc-koyu" x="436" y="264" width="28" height="28" rx="4"/>
+  </g>
+
+  <!-- ================= X ekseni: köprü arabası ================= -->
+  <g class="cnc-x">
+    <rect class="cnc-koyu" x="316" y="96" width="88" height="42" rx="5"/>
+    <circle class="cnc-marka" cx="334" cy="117" r="4"/>
+    <circle class="cnc-marka" cx="386" cy="117" r="4"/>
+
+    <!-- Z ekseni: iş mili aşağı iner -->
+    <g class="cnc-z">
+      <rect class="cnc-govde" x="342" y="116" width="36" height="60" rx="4"/>
+      <rect class="cnc-koyu" x="336" y="172" width="48" height="42" rx="6"/>
+      <line class="cnc-ince" x1="344" y1="183" x2="376" y2="183"/>
+      <line class="cnc-ince" x1="344" y1="193" x2="376" y2="193"/>
+
+      <!-- Takım tutucu ve kesici uç -->
+      <path class="cnc-koyu" d="M350 214h20l-4 14h-12z"/>
+      <path class="cnc-marka" d="M357 228h6l-3 12z"/>
+
+      <circle class="cnc-marka cnc-isik" cx="360" cy="240" r="11"/>
+
+      <!-- Talaşlar -->
+      <circle class="cnc-marka cnc-talas cnc-talas-1" cx="360" cy="238" r="2.6"/>
+      <circle class="cnc-marka cnc-talas cnc-talas-2" cx="360" cy="238" r="2"/>
+      <circle class="cnc-marka cnc-talas cnc-talas-3" cx="360" cy="238" r="2.4"/>
+      <circle class="cnc-marka cnc-talas cnc-talas-4" cx="360" cy="238" r="1.8"/>
+    </g>
+  </g>
+
+  <!-- ================= Eksen göstergesi =================
+       Sol sutun (x 92–134) ile tablanin sol ucu (x 196) arasindaki
+       ic bosluga yerlesir; govdenin uzerine binmez. -->
+  <g transform="translate(150, 150)">
+    <path class="cnc-marka-c" d="M0 44h40"/>
+    <path class="cnc-marka" d="M40 44l-7-4v8z"/>
+    <text class="cnc-eksen" x="46" y="49">X</text>
+
+    <path class="cnc-marka-c" d="M0 44V6"/>
+    <path class="cnc-marka" d="M0 6l-4 7h8z"/>
+    <text class="cnc-eksen" x="-6" y="-2">Z</text>
+
+    <path class="cnc-marka-c" d="M0 44l26 20"/>
+    <path class="cnc-marka" d="M26 64l-9-1 4 7z"/>
+    <text class="cnc-eksen" x="30" y="76">Y</text>
+  </g>
+
+  <!-- A ekseni etiketi — döner aynanın yanında -->
+  <g transform="translate(238, 232)">
+    <path class="cnc-marka-c" d="M-4 8a12 12 0 1 1 10 6"/>
+    <path class="cnc-marka" d="M6 14l-7-4 8-3z"/>
+    <text class="cnc-eksen" x="-14" y="-6">A</text>
+  </g>
+
+  <text class="cnc-etiket" x="62" y="386">Köprü tipi işleme merkezi</text>
+  <text class="cnc-etiket" x="658" y="386" text-anchor="end">X · Y · Z · A — 4 eksen</text>
+</svg>
