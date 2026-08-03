@@ -333,23 +333,38 @@ async def iletisim_gonder(
 @timeit
 @log
 async def sitemap(request: Request) -> Response:
-    """Tum public URL'leri lastmod bilgisiyle listeler."""
+    """Tum public URL'leri lastmod bilgisiyle listeler.
+
+    Onbelleklenmez: yeni yazi yayinlandigi anda site haritasinda gorunmesi
+    gerekir. Sorgular hafif, sayfa kucuk.
+    """
     site = settings.site_url.rstrip("/")
+
+    yazilar, _ = await repo.list_posts(page=1, per_page=500, status=PostStatus.PUBLISHED)
+    # Blog listesinin tazeligi en son yayinlanan yaziyla belirlenir; sabit bir
+    # "daily" degeri yerine gercek tarihi vermek tarayiciya dogru sinyal verir.
+    en_yeni = max(
+        (y["updated_at"] for y in yazilar if y.get("updated_at")), default=None
+    )
+
     girdiler: list[tuple[str, datetime | None, str, str]] = [
-        (f"{site}/", None, "weekly", "1.0"),
-        (f"{site}/blog", None, "daily", "0.9"),
+        (f"{site}/", en_yeni, "weekly", "1.0"),
+        (f"{site}/blog", en_yeni, "daily", "0.9"),
     ]
 
     for sayfa in await repo.list_pages():
         if sayfa["is_published"]:
             girdiler.append((f"{site}/{sayfa['slug']}", sayfa["updated_at"], "monthly", "0.7"))
 
-    yazilar, _ = await repo.list_posts(page=1, per_page=50, status=PostStatus.PUBLISHED)
     for y in yazilar:
         girdiler.append((f"{site}/blog/{y['slug']}", y["updated_at"], "monthly", "0.8"))
 
-    for etiket in await repo.list_tags(limit=100):
-        girdiler.append((f"{site}/etiket/{etiket['slug']}", None, "weekly", "0.5"))
+    # Tek yazilik etiket sayfasi, o yazinin kopyasindan ibarettir; site
+    # haritasina konursa arama motoruna "ince icerik" yigini sunulur.
+    # En az iki yazisi olan etiketler listelenir.
+    for etiket in await repo.list_tags(limit=200):
+        if etiket.get("post_count", 0) >= 2:
+            girdiler.append((f"{site}/etiket/{etiket['slug']}", None, "weekly", "0.5"))
 
     satirlar = []
     for url, lastmod, freq, oncelik in girdiler:
@@ -376,9 +391,20 @@ async def robots() -> PlainTextResponse:
     return PlainTextResponse(
         f"""User-agent: *
 Allow: /
+
+# Yonetim yollari
 Disallow: /panel
 Disallow: /giris
 Disallow: /api/
+
+# Arama sonuclari: her sorgu ayri bir URL uretir ve icerigi zaten var olan
+# yazilarin kopyasidir. Taranmasi tarama butcesini bosa harcar.
+Disallow: /blog?ara=
+Disallow: /*?ara=
+
+# Sayfalama taranabilir ama indekslenmesi gereksiz; yazilarin kendisi
+# site haritasinda zaten tek tek listeleniyor.
+Disallow: /*?sayfa=
 
 Sitemap: {site}/sitemap.xml
 """
