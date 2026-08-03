@@ -109,4 +109,7 @@ async def temel_baglam(request: Request, aktif: str = "") -> dict[str, Any]:
         "asset_version": ASSET_VERSION,
         "yil": datetime.now(UTC).year,
         "aktif": aktif,
+        # Bos ise sablon ilgili etiketi hic basmaz (bkz. src/config.py)
+        "google_dogrulama": settings.google_site_verification,
+        "ga4_id": settings.ga4_measurement_id,
     }

@@ -19,15 +19,28 @@ from src.decorators import client_ip
 #   python3 scripts/csp_hash.py
 _INLINE_SCRIPT_HASH = "'sha256-VPtWLhJ+rAMMZRasHJC4KJnD7RyYGvXNrNYNHuS0lbA='"
 
+# GA4 host'lari YALNIZCA olcum kimligi tanimliyken allowlist'e girer.
+# Kimlik bosken sablon etiketi zaten basmaz; host'u yine de acik birakmak
+# gereksiz bir ucuncu-taraf kapisi olurdu.
+# GA4'un satir ici kodu `static/js/analitik.js`e tasindi — bu yuzden
+# 'unsafe-inline' veya ikinci bir hash gerekmiyor, `'self'` yetiyor.
+_GA_SCRIPT = " https://www.googletagmanager.com" if settings.ga4_measurement_id else ""
+_GA_CONNECT = (
+    " https://www.google-analytics.com https://*.google-analytics.com"
+    " https://*.analytics.google.com https://*.googletagmanager.com"
+    if settings.ga4_measurement_id
+    else ""
+)
+
 _CSP = (
     "default-src 'self'; "
     "img-src 'self' data: https:; "
     # style-src: sablonlarda birkac satir ici `style=""` var; 'unsafe-inline'
     # yalnizca stil icin acik, script icin DEGIL.
     "style-src 'self' 'unsafe-inline'; "
-    f"script-src 'self' {_INLINE_SCRIPT_HASH}; "
+    f"script-src 'self' {_INLINE_SCRIPT_HASH}{_GA_SCRIPT}; "
     "font-src 'self' data:; "
-    "connect-src 'self'; "
+    f"connect-src 'self'{_GA_CONNECT}; "
     "form-action 'self'; "
     "frame-ancestors 'none'; "
     "base-uri 'self'; "

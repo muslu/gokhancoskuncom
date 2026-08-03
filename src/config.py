@@ -58,6 +58,12 @@ class Settings(BaseSettings):
     media_url: str = "/media"
     max_upload_mb: int = 8
 
+    # --- Google (Search Console + Analytics) ---
+    # Bos birakilirsa ilgili etiket sayfaya HIC basilmaz. "Ileride lazim olur"
+    # diye acik birakilan ucuncu-taraf host'u, acik kalan kapidir.
+    google_site_verification: str = ""
+    ga4_measurement_id: str = ""
+
     # --- E-posta (iletisim formu bildirimi) ---
     # Sunucuda Postfix zaten calisiyor; varsayilan olarak localhost:25'e teslim
     # edilir, kimlik dogrulama gerekmez. Harici bir SMTP kullanilacaksa
