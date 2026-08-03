@@ -21,35 +21,46 @@ Uctan uca dogrulandi — Gmail `250 OK` ile kabul etti, teslim edilen mesajda
 `DKIM-Signature: d=gokhancoskun.com` var, kutu `/var/vmail/gokhancoskun.com/siteform`
 otomatik olustu. Kutuda iki test mesaji duruyor (silinebilir).
 
+**Deploy artik git ile:** `/opt/gokhancoskun` bir git deposu (`origin` → GitHub,
+`--depth=1`). Guncelleme: `git fetch origin main && git reset --hard origin/main`.
+Dizin `www-data`'nin, root git calistirdigi icin
+`git config --global --add safe.directory /opt/gokhancoskun` gerekti.
+`.env`, `media/` ve `.ilk-parola` git'te olmadigindan checkout onlara dokunmaz.
+
+**2026-08-03 deploy edildi ve canlida dogrulandi:** ust/alt menu ayni sirada,
+`scrollbar-gutter` duzeltmesi, RSS → 410, CNC animasyonu anasayfada, iletisim formu
+e-posta + bot korumasi. Canli form testi: cok hizli gonderim 422 ✓, honeypot sessizce
+yutuldu ✓, gercek gonderim hem `contact_messages`'a yazildi hem Gmail'e `status=sent`
+ile ulasti ✓. Panel SSL alindi (Let's Encrypt, `CN=panel.gokhancoskun.com`,
+1 Kasim 2026'ya kadar, otomatik yenileme kurulu). Erisilebilirlik yeniden olculdu:
+`/` ve `/iletisim` → 100/100.
+
 **Acik kalan isler:**
 
-1. **Yerel degisiklikler HENUZ DEPLOY EDILMEDI.** Su isler yerelde bitti, sunucuda yok:
-   ust/alt menu sirasi, `scrollbar-gutter` duzeltmesi, RSS kaldirma, iletisim formu
-   e-posta + bot korumasi, anasayfadaki CNC animasyonu. Deploy icin dosya aktarimi
-   gerekiyor — base64 ve yerel HTTP sunucusu izin siniflandiricisi tarafindan bloklandi;
-   git uzerinden gitmek icin **commit + push onayi** bekleniyor.
+1. **HEAD istekleri tum sitede 405 donuyor** (GET'ler sorunsuz).
+   FastAPI'nin `APIRoute`'u — Starlette'in `Route`'unun aksine — `@router.get`
+   ile tanimlanan yollara **HEAD eklemez**; `main.app.routes` uzerinde dogrulandi:
+   `/` → `['GET']`. Etkisi: HEAD kullanan uptime monitorleri, link denetleyicileri
+   ve bazi crawler'lar 405 alir.
+   Duzeltme secenekleri: ilgili yollari `@router.api_route(..., methods=["GET","HEAD"])`
+   ile tanimlamak (8 route) veya tek bir middleware'de HEAD'i GET'e cevirmek
+   (govde/Content-Length davranisi dikkat ister). Kapsam disi oldugu icin yapilmadi.
 
-2. **Panel SSL alinmadi.** `panel.gokhancoskun.com` hala apex sertifikasiyla sunuluyor
-   (SAN'da yok → tarayici uyarir). DNS, certbot ve ACME webroot hazir; tek adim
-   `deploy/scripts/panel-ssl.sh` — komut izin siniflandiricisi tarafindan bloklandi,
-   kullanici onayi gerekiyor.
+   **ONCEKI TESHIS YANLISTI, DUZELTILDI:** "sitemap/robots yanlis Content-Type
+   donuyor" diye kaydedilen bulgu gercek degildi — `curl -I` HEAD gonderdigi icin
+   405 hata sayfasinin `text/html` tipi olculmustu. Gercek GET yanitlari **dogru**:
+   `robots.txt` → `text/plain; charset=utf-8`, `sitemap.xml` → `application/xml; charset=utf-8`.
+   nginx bu konuda tamamen suclu degil. Ders: Content-Type olcerken `curl -I` degil
+   `curl -s -o /dev/null -w '%{content_type}'` kullan.
 
-3. **`sitemap.xml` / `robots.txt` yanlis Content-Type donuyor** (`text/html`).
-   Uygulama katmani **dogru** — ASGI seviyesinde olculdu, `robots.txt` →
-   `text/plain; charset=utf-8`. Sorun ya nginx katmaninda (ortak
-   `snippets/mailautoconfig.conf` supheli) ya da sunucudaki kodun eskiligi.
-   Teshis: sunucuda `curl -sI http://127.0.0.1:8002/robots.txt`. (RSS kaldirildigi
-   icin artik iki dosya.)
-
-4. **`Server` header `musluyuksektepe`** donuyor, global kural `muslu@makdos` diyor.
+2. **`Server` header `musluyuksektepe`** donuyor, global kural `muslu@makdos` diyor.
    Deger ortak nginx yapilandirmasindan geliyor — degistirmek **diger siteleri de**
    etkiler, once kullaniciya sor.
 
-5. **Yerel kod hic commit edilmedi.** `.mcp.json` (icinde sunucu root parolasi)
-   yanlislikla index'e alinmisti; 2026-08-03'te unstage edildi, gecmise sizmadi
-   (HEAD'deki `ilk.txt` bostu). Commit oncesi `git diff --cached` ile bir daha bak.
-   Uyari: `git remote` URL'sinde GitHub PAT gomulu.
+3. **Uyari: `git remote` URL'sinde GitHub PAT gomulu.** `.mcp.json` (sunucu root
+   parolasi icerir) bir ara yanlislikla index'e alinmisti; unstage edildi ve gecmise
+   sizmadi (HEAD'deki `ilk.txt` bostu). Commit oncesi `git diff --cached` ile bak.
 
-6. **Sitede hic icerik yok** — yayinlanmis yazi ve etiket sifir.
+4. **Sitede hic icerik yok** — yayinlanmis yazi ve etiket sifir.
 
 Ilgili: [[ssh-mcp-takilmasi]]

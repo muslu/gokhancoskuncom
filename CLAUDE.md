@@ -20,6 +20,69 @@ Apex'te `/panel`, `/giris` panele 301 yonlendirilir, `/api/` 404 doner.
 
 ---
 
+## Projenin kapsami — site + panel DEGIL
+
+Bu depo yalnizca web sitesi ve yonetim paneli degildir. **Ikinci ve esit onemde bir
+is kolu var:** Gokhan'in gunluk isinde kullandigi CAM/CAD programlarina — basta
+**Alphacam 2019 R1** — makro ve eklenti yazmak, sonra bunlari sitede blog yazisina
+donusturmek.
+
+### Calisma dongusu
+
+1. Surekli tekrar eden bir isi Alphacam eklentisi/makrosu haline getiririz.
+2. Gokhan **kendi tezgahinda/bilgisayarinda test eder**.
+3. "Tamam, calisiyor — siteye yazi olarak ekle" dedinde: eklentiyi bir blog yazisina
+   cevir. Beklenen kalite: **duzgun bir aciklama + animasyonlu SVG gorseller**.
+   Ekran goruntusu degil — hareketi anlatan SVG (bkz. `templates/partials/cnc_animasyon.html`).
+4. Yazi siteye `mcp_server/server.py` araclariyla eklenir (`blog_yazisi_olustur`,
+   `blog_yazisi_guncelle`, `blog_yazisi_yayinla`). Once **taslak** olustur, Gokhan
+   okuyup onaylayinca yayinla.
+
+### ONCE ISLETIM SISTEMINI KONTROL ET
+
+Gokhan **bazen Windows** kullanir (Alphacam Windows programidir), bazen Linux.
+Herhangi bir is yapmadan once ortami dogrula — komutlari, yollari ve arac secimini
+buna gore ayarla:
+
+```bash
+uname -s            # Linux mu?
+python3 -c "import platform; print(platform.system(), platform.release())"
+```
+
+Windows'ta: `systemctl`/`su - postgres` yoktur, yollar `C:\...`, `python3` yerine
+`python` veya `py -3.12` olabilir, kabuk PowerShell'dir. Sunucuya erisim yine
+`excopan-ssh-web` MCP'si uzerinden calisir (o Linux sunucudur, degismez).
+
+### Alphacam tarafi
+
+Alphacam 2019 R1 otomasyonu VBA/COM uzerinden yapilir (`Licom.Alphacam` benzeri COM
+nesnesi + APlus). **Kesin API detayini ilk gercek iste dogrula** — surumler arasi
+farklar var; buraya tahminle sema yazma, calisan koddan ogrendigini yaz.
+
+### ⚠ Blog yazisinda animasyonlu SVG — dogrudan gomme CALISMAZ
+
+Yazi govdesi `src/services/markdown_service.py` icinde **bleach ile temizlenir** ve
+`_ALLOWED_TAGS` listesinde **`svg` YOKTUR** — markdown'a yapistirilan inline SVG
+sessizce tamamen silinir. Dogru yontem:
+
+1. SVG'yi **ayri bir dosya** olarak medya dizinine koy (`/opt/gokhancoskun/media/...`).
+2. Yaziya `<img>` ile gom: `![4 eksen kaba paso](/media/animasyon/kaba-paso.svg)`
+   — `img` etiketi ve goreli yollar zaten izinli, CSP `img-src 'self'` ile uyumlu.
+3. **CSS animasyonu `<img>` icindeki SVG'de calisir**, script calismaz (guvenli).
+   `prefers-reduced-motion` kurali SVG'nin kendi belgesinde degerlendirildigi icin
+   **medya SVG'sinin icine de** `@media (prefers-reduced-motion: reduce)` blogu koy —
+   site.css'teki global kural oraya ulasmaz.
+
+Alternatif (daha riskli, gerekmedikce yapma): `_ALLOWED_TAGS`'e kontrollu SVG
+whitelist'i eklemek. O zaman `script`, `foreignObject` ve tum `on*` oznitelikleri
+disarida birakilmali; animasyon icin `<style>` yerine SMIL (`<animate>`,
+`<animateTransform>`) tercih edilmeli.
+
+**Acik nokta:** Medya yukleme icin panelde/MCP'de hazir bir arac **yok** — SVG'ler
+su an SSH ile kopyalanmali. Ilk blog yazisi isinde bunu cozmek gerekecek.
+
+---
+
 ## Sunucu ve adresler
 
 | Sey | Deger |
