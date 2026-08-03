@@ -295,6 +295,75 @@ a { color: var(--brand); }
   justify-self: center;
 }
 
+/* ---------- Panel: adim adim rehber (API / MCP sayfasi) ---------- */
+.adimlar {
+  margin: 0.75rem 0 0;
+  padding-left: 1.4rem;
+  display: grid;
+  gap: 0.6rem;
+  max-width: 46rem;
+  color: var(--fg-soft);
+}
+.adimlar li { padding-left: 0.2rem; }
+.adimlar strong { color: var(--fg); }
+
+.rehber {
+  margin-top: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  max-width: 46rem;
+}
+.rehber > summary {
+  cursor: pointer;
+  padding: 0.85rem 1rem;
+  font-weight: 600;
+  border-radius: var(--radius);
+}
+.rehber[open] > summary { border-bottom: 1px solid var(--border); }
+.rehber > summary:focus-visible {
+  outline: 3px solid var(--brand-ui);
+  outline-offset: -3px;
+}
+.rehber > *:not(summary) { padding-inline: 1rem; }
+.rehber > *:last-child { padding-bottom: 1rem; }
+.rehber .adimlar { padding-left: 2.6rem; }
+
+.ornekler {
+  margin: 0.75rem 0 0;
+  padding-left: 1.4rem;
+  display: grid;
+  gap: 0.45rem;
+  max-width: 46rem;
+  color: var(--fg-soft);
+}
+
+/* ---------- Panel: mesaj yanitlama ---------- */
+.yanit-kutu {
+  margin-top: 0.85rem;
+  padding: 0.7rem 0.9rem;
+  border-left: 3px solid var(--ok);
+  background: var(--surface-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.yanit-ac { margin-top: 0.5rem; }
+.yanit-ac > summary {
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--brand);
+  padding: 0.3rem 0;
+  /* Renk tek basina ayirt edici olamaz (WCAG 1.4.1) */
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.yanit-ac > summary:focus-visible {
+  outline: 3px solid var(--brand-ui);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
 /* ---------- Sabit WhatsApp bagi ----------
    Renk OLCULDU (WCAG 1.4.11, grafik nesneler icin esik 3:1):
      WhatsApp'in parlak yesili #25D366 beyaz ikonla 1.98:1 ve acik tema

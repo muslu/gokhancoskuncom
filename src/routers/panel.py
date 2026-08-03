@@ -1,6 +1,8 @@
 """Yonetim paneli: giris, yazi/sayfa yonetimi, profil, mesajlar, API tokenlari."""
 
+import asyncio
 import math
+from smtplib import SMTPException
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Form, Query, Request, status
@@ -13,6 +15,7 @@ from src.config import settings
 from src.crypto import generate_api_token, verify_password
 from src.decorators import client_ip, log, rate_limit, timeit
 from src.models import repository as repo
+from src.services.mail_service import iletisim_yaniti_gonder
 from src.models.schemas import (
     PageUpdate,
     PostCreate,
@@ -604,6 +607,57 @@ async def mesaj_okundu(request: Request, mesaj_id: int) -> RedirectResponse:
         return _yonlendir("/giris")
     await repo.mark_message_read(mesaj_id)
     return _yonlendir("/panel/mesajlar", mesaj="Mesaj okundu olarak işaretlendi.")
+
+
+@router.post("/panel/mesajlar/{mesaj_id}/yanitla")
+@rate_limit(requests=20, window_seconds=600, scope="panel-yanit")
+@timeit
+@log
+async def mesaj_yanitla(
+    request: Request,
+    mesaj_id: int,
+    arka_plan: BackgroundTasks,
+    yanit: str = Form(...),
+) -> RedirectResponse:
+    """Panelden yazilan yaniti SMTP ile gonderir ve kaydeder."""
+    kullanici = await authenticate_cookie(request)
+    if kullanici is None:
+        return _yonlendir("/giris")
+
+    metin = yanit.strip()
+    if len(metin) < 2:
+        return _yonlendir("/panel/mesajlar", hata="Yanıt boş olamaz.")
+
+    mesaj = await repo.get_contact_message(mesaj_id)
+    if mesaj is None:
+        return _yonlendir("/panel/mesajlar", hata="Mesaj bulunamadı.")
+
+    # SMTP bloklayicidir; olay dongusunu tikamamak icin ayri is parcaciginda.
+    # Arka plana ATILMAZ — gonderim sonucunu bekleyen bir kullanici var ve
+    # "gonderildi" deyip sessizce kaybolan yanit en kotu sonuc olurdu.
+    try:
+        await asyncio.to_thread(
+            iletisim_yaniti_gonder,
+            alici_ad=mesaj["name"],
+            alici_eposta=mesaj["email"],
+            konu=mesaj["subject"],
+            yanit=metin,
+            orijinal_mesaj=mesaj["message"],
+        )
+    except (SMTPException, OSError) as exc:
+        logger.error("Mesaj yaniti gonderilemedi (#%s): %s", mesaj_id, exc)
+        return _yonlendir(
+            "/panel/mesajlar",
+            hata="Yanıt gönderilemedi, e-posta sunucusuna ulaşılamadı. Tekrar deneyin.",
+        )
+
+    await repo.save_contact_reply(mesaj_id, metin, int(kullanici["id"]))
+    arka_plan.add_task(
+        repo.write_audit,
+        actor=kullanici["username"], actor_type="user", action="reply",
+        entity="contact_message", entity_id=str(mesaj_id), ip=client_ip(request),
+    )
+    return _yonlendir("/panel/mesajlar", mesaj=f"Yanıt {mesaj['email']} adresine gönderildi.")
 
 
 # ==================================================================

@@ -10,7 +10,15 @@ from pydantic import ValidationError
 
 from src.colorlogger import logger
 from src.config import settings
-from src.decorators import cache_response, client_ip, log, rate_limit, retry, timeit
+from src.decorators import (
+    cache_response,
+    client_ip,
+    log,
+    okuma_sayaci,
+    rate_limit,
+    retry,
+    timeit,
+)
 from src.models import repository as repo
 from src.models.schemas import ContactCreate, PostStatus
 from src.services.bot_koruma import FormTokenHatasi, form_tokeni_dogrula, form_tokeni_uret
@@ -158,6 +166,9 @@ async def etiket_sayfasi(
 # ==================================================================
 @router.get("/blog/{yazi_slug}", response_class=HTMLResponse, summary="Yazı detayı")
 @rate_limit(scope="public")
+# Sayac onbellegin DISINDA: cache_response isabet ettiginde govde calismaz,
+# govdeden artirilan sayac 5 dakika boyunca hic islemezdi.
+@okuma_sayaci("yazi_slug")
 @cache_response(ttl=300, prefix="yazi")
 @retry(attempts=2)
 @timeit
@@ -176,7 +187,6 @@ async def yazi_detay(
             "Aradığınız yazı kaldırılmış veya adresi değişmiş olabilir.",
         )
 
-    arka_plan.add_task(repo.increment_view_count, int(yazi["id"]))
     site = baglam["site_url"]
 
     return templates.TemplateResponse(

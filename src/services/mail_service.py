@@ -24,6 +24,70 @@ def _adres(eposta: str, gorunen_ad: str = "") -> Address:
     return Address(display_name=gorunen_ad, username=kullanici, domain=alan)
 
 
+def _gonder(ileti: EmailMessage) -> None:
+    """Hazir bir iletiyi SMTP'ye teslim eder. Hata durumunda istisna firlatir."""
+    with smtplib.SMTP(
+        settings.smtp_host, settings.smtp_port, timeout=settings.smtp_timeout
+    ) as baglanti:
+        if settings.smtp_starttls:
+            baglanti.starttls()
+        if settings.smtp_user:
+            baglanti.login(settings.smtp_user, settings.smtp_password)
+        baglanti.send_message(ileti)
+
+
+def iletisim_yaniti_gonder(
+    *,
+    alici_ad: str,
+    alici_eposta: str,
+    konu: str | None,
+    yanit: str,
+    orijinal_mesaj: str,
+) -> None:
+    """Panelden yazilan yaniti ziyaretciye e-posta olarak gonderir.
+
+    Args:
+        alici_ad: Mesaji gonderen kisinin adi.
+        alici_eposta: Yanitin gidecegi adres.
+        konu: Orijinal mesajin konusu; basina "Re: " eklenir.
+        yanit: Panelde yazilan yanit metni.
+        orijinal_mesaj: Yanitin altina alintilanacak ilk mesaj.
+
+    Raises:
+        smtplib.SMTPException | OSError: Gonderim basarisiz olursa. Bu fonksiyon
+            **hatayi yutmaz** — iletisim formu bildiriminin aksine burada
+            sonucu bekleyen bir kullanici var; panelde "gonderildi" yazip
+            sessizce kaybolan bir yanit en kotu sonuctur.
+    """
+    ileti = EmailMessage()
+    ileti["Subject"] = f"Re: {konu}" if konu else "Mesajınıza yanıt"
+    ileti["From"] = _adres(settings.mail_from, settings.app_name)
+    ileti["To"] = _adres(alici_eposta, alici_ad)
+    # Ziyaretci yanitlarsa dogrudan site sahibinin kutusuna dussun.
+    ileti["Reply-To"] = _adres(settings.mail_to)
+    ileti["Message-ID"] = make_msgid(domain=settings.mail_from.partition("@")[2])
+
+    alinti = "\n".join(f"> {satir}" for satir in orijinal_mesaj.splitlines())
+    ileti.set_content(
+        f"""Merhaba {alici_ad},
+
+{yanit}
+
+--
+{settings.app_name}
+{settings.site_url}
+
+------------------------------------------------------------
+Gönderdiğiniz mesaj:
+
+{alinti}
+"""
+    )
+
+    _gonder(ileti)
+    lg.info("Iletisim yaniti gonderildi → %s", alici_eposta)
+
+
 def iletisim_bildirimi_gonder(
     *,
     ad: str,

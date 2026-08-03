@@ -89,6 +89,56 @@ def _build_cache_key(prefix: str, request: Request, vary_cookie: bool) -> str:
     return f"http:{prefix}:{digest}"
 
 
+def okuma_sayaci(
+    yol_parametresi: str, prefix: str = "okundu", pencere_saniye: int = 86400
+) -> Callable[[F], F]:
+    """Sayfa okunmasini ayni IP icin pencere basina bir kez sayar.
+
+    **`cache_response`'un DISINDA** (ondan once) uygulanmalidir: onbellek isabet
+    ettiginde endpoint govdesi hic calismaz, dolayisiyla govde icinde artirilan
+    bir sayac onbellek suresince hic islemez.
+
+    IP ham saklanmaz; JWT_SECRET ile tuzlanip kisaltilmis sha256'si tutulur.
+    Amac sayim, kimlik degil.
+
+    Args:
+        yol_parametresi: Sayilacak kaydi belirleyen yol degiskeninin adi
+            (ornek: "yazi_slug").
+        prefix: Valkey anahtar oneki.
+        pencere_saniye: Ayni IP'nin tekrar sayilmayacagi sure (varsayilan 1 gun).
+    """
+
+    def decorator(func: F) -> F:
+        @functools.wraps(func)
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            request = _find_request(args, kwargs)
+            deger = kwargs.get(yol_parametresi)
+
+            if request is not None and deger:
+                try:
+                    tuz = f"{client_ip(request)}|{settings.jwt_secret}"
+                    parmak = hashlib.sha256(tuz.encode()).hexdigest()[:20]
+                    anahtar = f"{prefix}:{deger}:{parmak}"
+                    if await cache.get_json(anahtar) is None:
+                        await cache.set_json(anahtar, 1, pencere_saniye)
+                        await repo_okuma_artir(deger)
+                except Exception as exc:  # noqa: BLE001 — sayac istegi bozmamali
+                    logger.warning("Okuma sayaci islenemedi (%s): %s", deger, exc)
+
+            return await func(*args, **kwargs)
+
+        return wrapper  # type: ignore[return-value]
+
+    return decorator
+
+
+async def repo_okuma_artir(slug: str) -> None:
+    """Sayaci artirir. Dairesel import olmasin diye repository gec yuklenir."""
+    from src.models import repository as repo
+
+    await repo.increment_view_by_slug(slug)
+
+
 def cache_response(
     ttl: int | None = None, prefix: str = "page", vary_cookie: bool = False
 ) -> Callable[[F], F]:

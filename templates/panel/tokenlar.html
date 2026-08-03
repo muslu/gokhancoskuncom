@@ -101,15 +101,99 @@
   {% endif %}
 </section>
 
-<section aria-labelledby="mcp-baslik" style="margin-top:3rem">
-  <h2 id="mcp-baslik">MCP kurulumu</h2>
-  <p style="color:var(--fg-mute);font-size:0.94rem">
-    Token ürettikten sonra yerel <code>.env</code> dosyanıza yazın, ardından Claude Code'u
-    proje dizininde yeniden başlatın. Kullanılabilir araçlar:
-    <code>blog_yazisi_olustur</code>, <code>blog_yazisi_guncelle</code>,
-    <code>blog_yazisi_listele</code>, <code>blog_yazisi_yayinla</code>,
-    <code>blog_yazisi_sil</code>, <code>sayfa_guncelle</code>, <code>profil_guncelle</code>.
+<section aria-labelledby="nasil-baslik" style="margin-top:3rem">
+  <h2 id="nasil-baslik">Yapay zekâ ile siteyi yönetmek</h2>
+  <p class="metin" style="color:var(--fg-mute)">
+    Token ürettikten sonra Claude, ChatGPT veya başka bir araçla sohbet ederek
+    yazı yazdırabilir, taslakları listeletebilir ve yayınlatabilirsiniz.
+    Aşağıda kullandığınız araca göre adımlar var.
   </p>
-  <p class="jeton-kutu">GC_API_BASE={{ panel_url }}<br>GC_API_TOKEN=&lt;ürettiğiniz token&gt;</p>
+
+  <h3 style="margin-top:2rem">Adım 1 — Token üretin</h3>
+  <ol class="adimlar">
+    <li>Yukarıdaki <strong>“Yeni token”</strong> formuna bir ad yazın
+      (örnek: <em>ChatGPT — masaüstü</em>). Ad sadece sizin için; nerede
+      kullandığınızı hatırlamanıza yarar.</li>
+    <li>Vermek istediğiniz yetkileri işaretleyin. Yalnızca yazı yazdıracaksanız
+      <strong>“Yazı oluşturma ve düzenleme”</strong> yeterlidir.</li>
+    <li><strong>Üret</strong>'e basın.</li>
+    <li>Ekranda çıkan uzun metni <strong>hemen kopyalayın.</strong> Bu metin
+      bir daha gösterilmez; kaybederseniz yenisini üretirsiniz.</li>
+  </ol>
+
+  <h3 style="margin-top:2rem">Adım 2 — Aracınıza bağlayın</h3>
+
+  <details class="rehber">
+    <summary>Claude ile (Claude Code / Claude Desktop)</summary>
+    <p class="metin">Claude bu siteyi <strong>MCP</strong> üzerinden doğrudan
+      yönetebilir — en eksiksiz seçenek budur.</p>
+    <ol class="adimlar">
+      <li>Proje klasöründeki <code>.env</code> dosyasını açın.</li>
+      <li>Şu iki satırı yazın:
+        <span class="jeton-kutu" style="margin-top:0.5rem">GC_API_BASE={{ panel_url }}<br>GC_API_TOKEN=kopyaladığınız-token</span>
+      </li>
+      <li>Claude'u <strong>kapatıp yeniden açın.</strong> Bağlantıyı okumak için
+        yeniden başlaması gerekir.</li>
+      <li>Sohbete <em>“blog bağlantısını test et”</em> yazın. Bağlantı
+        çalışıyorsa site adınızı ve yazı sayısını döndürür.</li>
+    </ol>
+  </details>
+
+  <details class="rehber">
+    <summary>ChatGPT ile (Custom GPT)</summary>
+    <p class="metin">ChatGPT'nin ücretli sürümünde kendi GPT'nizi oluşturup bu
+      siteye bağlayabilirsiniz.</p>
+    <ol class="adimlar">
+      <li>ChatGPT'de <strong>Explore GPTs → Create</strong> yolunu izleyin.</li>
+      <li><strong>Configure</strong> sekmesinde en alttaki
+        <strong>Create new action</strong>'a tıklayın.</li>
+      <li><strong>Import from URL</strong> kutusuna şunu yapıştırın:
+        <span class="jeton-kutu" style="margin-top:0.5rem">{{ panel_url }}/api/openapi.json</span>
+        Bu adres, sitenin hangi işlemleri kabul ettiğini ChatGPT'ye kendisi anlatır.
+      </li>
+      <li><strong>Authentication</strong> bölümünde
+        <strong>API Key</strong> → <strong>Bearer</strong> seçin ve
+        token'ı yapıştırın.</li>
+      <li>Kaydedin. Artık o GPT'ye <em>“yeni bir taslak yazı oluştur”</em>
+        diyebilirsiniz.</li>
+    </ol>
+  </details>
+
+  <details class="rehber">
+    <summary>Gemini ve diğer araçlar</summary>
+    <p class="metin">
+      Gemini'nin sohbet arayüzünde, ChatGPT'deki gibi hazır bir “kendi API'ni
+      bağla” alanı <strong>bulunmuyor.</strong> Gemini ile kullanmak için
+      Google AI Studio üzerinden <em>function calling</em> kurmanız gerekir —
+      bu, sohbet ayarından değil kod yazarak yapılan bir iştir.
+    </p>
+    <p class="metin">
+      Kod yazmadan denemek isterseniz, herhangi bir araçtan aşağıdaki komutu
+      çalıştırarak bağlantıyı test edebilirsiniz:
+    </p>
+    <span class="jeton-kutu">curl -H "Authorization: Bearer TOKEN" \<br>&nbsp;&nbsp;{{ panel_url }}/api/v1/kimlik</span>
+    <p class="metin" style="margin-top:0.75rem">
+      Tüm işlemlerin listesi:
+      <a href="{{ panel_url }}/api/docs">{{ panel_url }}/api/docs</a>
+    </p>
+  </details>
+
+  <h3 style="margin-top:2rem">Adım 3 — Ne diyebilirsiniz</h3>
+  <p class="metin" style="color:var(--fg-mute)">
+    Bağlantı kurulduktan sonra normal cümlelerle konuşun. Örnekler:
+  </p>
+  <ul class="ornekler">
+    <li>“Alphacam'de takım telafisi konusunda bir yazı yaz, <strong>taslak olarak</strong> kaydet.”</li>
+    <li>“Taslakta bekleyen yazıları listele.”</li>
+    <li>“Kaba paso yazısına bir bölüm daha ekle.”</li>
+    <li>“Nesting yazısını yayınla.”</li>
+    <li>“Hangi etiketlerde kaç yazı var?”</li>
+  </ul>
+
+  <div class="uyari uyari-bilgi" role="note" style="margin-top:1.5rem">
+    <strong>Önce taslak isteyin.</strong> Yapay zekâya doğrudan “yayınla”
+    derseniz yazı okumadan siteye çıkar. Alışkanlık olarak taslak isteyip
+    panelden okuyun, sonra yayınlayın.
+  </div>
 </section>
 {% endblock %}

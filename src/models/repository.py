@@ -327,6 +327,25 @@ async def related_posts(post_id: int, limit: int = 3) -> list[dict[str, Any]]:
     return await _attach_tags(rows)
 
 
+async def increment_view_by_slug(slug: str) -> None:
+    """Yayindaki yazinin okunma sayacini slug uzerinden artirir.
+
+    Sayac `@okuma_sayaci` dekoratorunden cagrilir; dekorator onbellegin disinda
+    calistigi icin elinde yalnizca slug vardir, kayit kimligi yoktur.
+    Taslaklar sayilmaz.
+    """
+    try:
+        await db.execute_write(
+            """
+            UPDATE posts SET view_count = view_count + 1
+            WHERE slug = :slug AND status = 'published'
+            """,
+            {"slug": slug},
+        )
+    except Exception as exc:  # noqa: BLE001 — sayac hatasi istegi bozmamali
+        logger.warning("Okunma sayaci guncellenemedi (%s): %s", slug, exc)
+
+
 async def increment_view_count(post_id: int) -> None:
     """Goruntulenme sayacini artirir (BackgroundTasks icinden cagrilir)."""
     try:
@@ -639,12 +658,45 @@ async def list_contact_messages(limit: int = 50) -> list[dict[str, Any]]:
     """Son iletisim mesajlarini listeler."""
     return await db.execute_query(
         """
-        SELECT id, name, email, subject, message, is_read, created_at
+        SELECT id, name, email, subject, message, is_read, created_at,
+               replied_at, reply_body
         FROM contact_messages
         ORDER BY created_at DESC
         LIMIT :limit
         """,
         {"limit": limit},
+    )
+
+
+async def get_contact_message(message_id: int) -> dict[str, Any] | None:
+    """Tek bir iletisim mesajini dondurur (yanitlamadan once okunur)."""
+    return await db.fetch_one(
+        """
+        SELECT id, name, email, subject, message, is_read, created_at,
+               replied_at, reply_body
+        FROM contact_messages
+        WHERE id = :id
+        """,
+        {"id": message_id},
+    )
+
+
+async def save_contact_reply(message_id: int, reply_body: str, replied_by: int) -> None:
+    """Gonderilen yaniti kaydeder ve mesaji okundu isaretler.
+
+    Yalnizca e-posta **gonderimi basarili olduktan sonra** cagrilir; aksi halde
+    panelde yanitlanmis gorunen ama karsi tarafa ulasmamis mesajlar olusur.
+    """
+    await db.execute_write(
+        """
+        UPDATE contact_messages
+        SET reply_body = :body,
+            replied_at = now(),
+            replied_by = :user_id,
+            is_read    = TRUE
+        WHERE id = :id
+        """,
+        {"id": message_id, "body": reply_body, "user_id": replied_by},
     )
 
 

@@ -70,6 +70,12 @@
         <span aria-hidden="true">·</span>
         {% endif %}
         <span>{{ yazi.reading_minutes }} dk okuma</span>
+        {# Sayac ayni IP'yi gunde bir kez sayar; deger onbellek nedeniyle
+           birkac dakika geriden gelebilir. #}
+        {% if yazi.view_count %}
+        <span aria-hidden="true">·</span>
+        <span>{{ yazi.view_count }} okunma</span>
+        {% endif %}
         {% if yazi.author_name %}
         <span aria-hidden="true">·</span><span>{{ yazi.author_name }}</span>
         {% endif %}
