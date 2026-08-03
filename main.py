@@ -207,6 +207,29 @@ app.include_router(panel.router)
 app.include_router(public.router)
 
 
+# ------------------------------------------------------------------
+# GET tanimlanan her yola HEAD de eklenir.
+#
+# Starlette'in `Route` sinifi bunu kendiliginden yapar; FastAPI'nin
+# `APIRoute`'u YAPMAZ — `@router.get(...)` yalnizca GET kaydeder. Sonuc:
+# butun site HEAD isteklerine 405 doner. Bundan etkilenenler: calisma
+# suresi izleyicileri, bag denetleyicileri ve dosyayi once HEAD ile
+# yoklayan bazi tarayicilar (ornegin sitemap cekicileri).
+#
+# Govde HEAD yanitinda gonderilmez; bunu HTTP katmani (h11/uvicorn)
+# istegin metoduna bakarak halleder.
+# ------------------------------------------------------------------
+def _head_destegi_ekle(uygulama: FastAPI) -> None:
+    """Yalnizca GET kabul eden route'lara HEAD metodunu ekler."""
+    for route in uygulama.routes:
+        metotlar = getattr(route, "methods", None)
+        if metotlar == {"GET"}:
+            route.methods = {"GET", "HEAD"}
+
+
+_head_destegi_ekle(app)
+
+
 if __name__ == "__main__":
     import uvicorn
 
