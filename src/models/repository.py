@@ -343,7 +343,8 @@ async def slug_exists(slug: str, exclude_id: int | None = None) -> bool:
     result = await db.fetch_value(
         """
         SELECT 1 FROM posts
-        WHERE slug = :slug AND (:exclude_id::bigint IS NULL OR id <> :exclude_id)
+        WHERE slug = :slug
+          AND (CAST(:exclude_id AS BIGINT) IS NULL OR id <> :exclude_id)
         LIMIT 1
         """,
         {"slug": slug, "exclude_id": exclude_id},
@@ -666,8 +667,8 @@ async def create_api_token(
         INSERT INTO api_tokens (name, token_hash, token_prefix, scopes, owner_id, expires_at)
         VALUES (
             :name, :token_hash, :token_prefix, :scopes, :owner_id,
-            CASE WHEN :expires_days::int IS NULL THEN NULL
-                 ELSE now() + make_interval(days => :expires_days::int) END
+            CASE WHEN CAST(:expires_days AS INT) IS NULL THEN NULL
+                 ELSE now() + make_interval(days => CAST(:expires_days AS INT)) END
         )
         RETURNING id, name, token_prefix, scopes, is_active,
                   last_used_at, expires_at, created_at

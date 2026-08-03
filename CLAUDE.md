@@ -202,6 +202,13 @@ catch-all `/{sayfa_slug}` yerine **kendi route'unda** karsilanir.
   `Alt-Svc` de `$altsvc` degiskeni uzerinden, sitemap'te bosaltilarak yonetilir.
 - **`proxy_hide_header`** ile arka ucun `Cache-Control` / `HSTS` /
   `X-Content-Type-Options` kopyalari gizlenir — bu basliklarin tek sahibi nginx.
+- **SQL'de PostgreSQL `::` cast'i kullanma — `CAST(... AS ...)` yaz.**
+  SQLAlchemy `text()` icinde `:param::tip` yazildiginda `::`'yi escape sanip
+  parametreyi **degistirmeden birakiyor**; PostgreSQL'e ham `:param` gidiyor ve
+  sorgu `syntax error at or near ":"` ile patliyor. Bu yuzden panelden ve MCP'den
+  yazi eklemek bir sure tamamen kirikti (`slug_exists` icindeki
+  `:exclude_id::bigint`). Ayni tuzak `create_api_token`'da da vardi.
+  NULL parametrede tip belirtmek gerekiyorsa `CAST(:x AS BIGINT)` kullan.
 - **Valkey DB 3** — sunucu paylasimli, baska DB numarasini kullanma.
 - **Panel sertifikasi** alinana kadar nginx panel blogunda gecici olarak apex
   sertifikasi kullanilir; `deploy/scripts/panel-ssl.sh` bunu kendi sertifikasina gecirir.
