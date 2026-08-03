@@ -65,8 +65,19 @@ Starlette'in aksine kendiliginden yapmaz).
    yonlendiriliyor. Gokhan kendi kurulumunda teyit edince genisletilebilir.
 
 3. **Panel erisimi:** kullanici adi `gokhan`. Parola sunucuda
-   `/opt/gokhancoskun/.ilk-parola` dosyasinda; ayrica DB'de Fernet ile geri
-   cozulebilir sekilde duruyor (`decrypt_password`). `last_login_at` uzun sure
-   bos kaldi — parola degistirilince o dosya silinmeli.
+   **`/opt/gokhancoskun/.panel-parola`** (mod 600). Eski `.ilk-parola` dosyasi
+   rotasyonda silindi.
+
+**2026-08-03 sir rotasyonu yapildi** (`scripts/anahtar_rotasyonu.py`):
+FERNET_KEY, JWT_SECRET, PostgreSQL rol parolasi (40 hane) ve panel parolasi
+(28 hane) yenilendi. Kritik nokta: FERNET_KEY once degistirilseydi DB'deki
+sifreli parolalar cozulemez olurdu — betik once eski anahtarla cozup yeni
+anahtarla yeniden sifreliyor, rol parolasini **ondan sonra** degistiriyor.
+API tokenlari etkilenmez (SHA-256 ozeti, anahtarlara bagli degil).
+Rotasyon sonrasi dogrulandi: eski parola reddediliyor, yeni parola ile giris
+ve tum panel sayfalari 200, iletisim formu (bot-koruma token'i JWT_SECRET ile
+imzalanir) calisiyor, public sayfalar 200.
+Yedekler: `/root/gokhancoskun-yedek-20260803-150853/` (tam DB dump + eski .env)
+ve `/opt/gokhancoskun/.env.env.yedek.20260803-151750`.
 
 Ilgili: [[ssh-mcp-takilmasi]]
