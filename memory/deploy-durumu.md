@@ -61,6 +61,16 @@ ile ulasti ✓. Panel SSL alindi (Let's Encrypt, `CN=panel.gokhancoskun.com`,
    parolasi icerir) bir ara yanlislikla index'e alinmisti; unstage edildi ve gecmise
    sizmadi (HEAD'deki `ilk.txt` bostu). Commit oncesi `git diff --cached` ile bak.
 
-4. **Sitede hic icerik yok** — yayinlanmis yazi ve etiket sifir.
+4. **Ilk yazi yayinda:** "Alphacam'de Ilk VBA Makronuz" (id=1, 5 etiket, gorseli
+   `static/img/blog/alphacam-makro-akisi.svg`). Yazidaki Alphacam API cekirdegi
+   (`App`, `App.ActiveDrawing`, `Drw.RunQuery`, `App.LicomdatPath`) web
+   kaynaklarindan dogrulandi; **geometri olusturma / operasyon ekleme imzalari
+   dogrulanamadi**, o yuzden yaziya konmadi — okuyucu Object Browser'a
+   yonlendiriliyor. Gokhan kendi kurulumunda teyit edince genisletilebilir.
+
+5. **Panel erisimi:** kullanici adi `gokhan`. Parola sunucuda
+   `/opt/gokhancoskun/.ilk-parola` dosyasinda; ayrica DB'de Fernet ile geri
+   cozulebilir sekilde duruyor (`decrypt_password`). `last_login_at` uzun sure
+   bos kaldi — parola degistirilince o dosya silinmeli.
 
 Ilgili: [[ssh-mcp-takilmasi]]
