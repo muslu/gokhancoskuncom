@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Takım yolundan NC koduna dönüşüm — gokhancoskun.com yazi serisi gorseli.
+     <img> ile gomulur: renk tokenlari ve hareket-azaltma kurali burada tanimli. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img"
+     aria-labelledby="b a">
+  <title id="b">Takım yolundan NC koduna dönüşüm</title>
+  <desc id="a">Soldaki takım yolu, ortadaki post processor üzerinden geçerek sağda tezgâha özel NC kodu satırlarına dönüşüyor.</desc>
+  <style>
+    svg {
+      --yuzey: #ffffff; --yuzey2: #f0ece4; --kenar: #7d7669; --ince: #d9d3c7;
+      --metin: #413e38; --soluk: #5a564d; --marka: #a8492a; --ok: #186a3b;
+      --uyari: #8a5300;
+    }
+    @media (prefers-color-scheme: dark) {
+      svg {
+        --yuzey: #1c1b16; --yuzey2: #25241d; --kenar: #7a7466; --ince: #3a3830;
+        --metin: #f2efe7; --soluk: #a8a294; --marka: #e08a68; --ok: #66d19e;
+        --uyari: #e8b45c;
+      }
+    }
+    .kutu   { fill: var(--yuzey); stroke: var(--kenar); stroke-width: 2; }
+    .dolu   { fill: var(--yuzey2); stroke: var(--kenar); stroke-width: 2; }
+    .cizgi  { stroke: var(--kenar); stroke-width: 2; fill: none; }
+    .ince   { stroke: var(--ince); stroke-width: 1.5; fill: none; }
+    .marka  { fill: var(--marka); }
+    .markac { stroke: var(--marka); stroke-width: 2.5; fill: none; }
+    .okc    { stroke: var(--ok); stroke-width: 2.5; fill: none; }
+    .yazi   { fill: var(--metin); font: 600 14px ui-sans-serif, system-ui, sans-serif; }
+    .kucuk  { fill: var(--soluk); font: 500 12px ui-sans-serif, system-ui, sans-serif; }
+    .kod    { fill: var(--soluk); font: 12px ui-monospace, Menlo, Consolas, monospace; }
+
+    .satir { animation: satir-gel 6s ease-in-out infinite; }
+    .l1 { animation-delay: 0.6s; } .l2 { animation-delay: 0.9s; }
+    .l3 { animation-delay: 1.2s; } .l4 { animation-delay: 1.5s; }
+    .l5 { animation-delay: 1.8s; }
+    @keyframes satir-gel {
+      0%        { opacity: 1; transform: translateX(0); }
+      8%        { opacity: 0; transform: translateX(-8px); }
+      20%, 100% { opacity: 1; transform: translateX(0); }
+    }
+    .disli { transform-origin: 366px 150px; animation: don 6s linear infinite; }
+    @keyframes don { to { transform: rotate(360deg); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+    }
+  </style>
+  <!-- Kendi zemini: SVG ayri belge oldugu icin sayfanin temasini bilemez.
+       Zemin olmazsa koyu tema metni acik sayfada okunmaz kaliyor. -->
+  <rect width="100%" height="100%" fill="var(--yuzey)"/>
+  <text class="yazi" x="40" y="34">Takım yolu</text>
+  <rect class="kutu" x="40" y="52" width="260" height="200" rx="6"/>
+  <path class="okc" fill="none" d="M70 220 V96 h84 v72 h84 V96 h32"/>
+  <circle class="marka" cx="70" cy="220" r="5"/>
+  <text class="kucuk" x="40" y="278">Alphacam içinde, tezgâhtan bağımsız.</text>
+
+  <!-- Post processor -->
+  <g class="disli">
+    <circle cx="366" cy="150" r="22" fill="none" stroke="var(--marka)" stroke-width="3"/>
+    <path d="M366 122v-10M366 188v-10M338 150h-10M404 150h10M346 130l-7-7M386 170l7 7M386 130l7-7M346 170l-7 7"
+          stroke="var(--marka)" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <text class="kucuk marka" x="366" y="204" text-anchor="middle">post</text>
+  <text class="kucuk marka" x="366" y="222" text-anchor="middle">processor</text>
+
+  <!-- NC kodu -->
+  <text class="yazi" x="440" y="34">NC kodu</text>
+  <rect class="kutu" x="440" y="52" width="240" height="200" rx="6"/>
+  <text class="kod satir l1" x="456" y="84">G21 G90 G54</text>
+  <text class="kod satir l2" x="456" y="112">T3 M06</text>
+  <text class="kod satir l3" x="456" y="140">S12000 M03</text>
+  <text class="kod satir l4" x="456" y="168">G00 X0 Y0 Z5.</text>
+  <text class="kod satir l5" x="456" y="196">G01 Z-3. F800</text>
+  <text class="kucuk" x="456" y="228">…tezgâhınıza özel</text>
+  <text class="kucuk" x="440" y="278">Aynı yol, farklı tezgâh = farklı kod.</text>
+
+</svg>

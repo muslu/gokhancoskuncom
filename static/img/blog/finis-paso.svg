@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Finiş pasosunda yüzey kalitesinin iyileşmesi — gokhancoskun.com yazi serisi gorseli.
+     <img> ile gomulur: renk tokenlari ve hareket-azaltma kurali burada tanimli. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img"
+     aria-labelledby="b a">
+  <title id="b">Finiş pasosunda yüzey kalitesinin iyileşmesi</title>
+  <desc id="a">Üstte kaba pasodan kalan basamaklı yüzey, altta finiş pasosundan sonra düzleşmiş yüzey. Adım aralığı küçüldükçe basamaklar kayboluyor.</desc>
+  <style>
+    svg {
+      --yuzey: #ffffff; --yuzey2: #f0ece4; --kenar: #7d7669; --ince: #d9d3c7;
+      --metin: #413e38; --soluk: #5a564d; --marka: #a8492a; --ok: #186a3b;
+      --uyari: #8a5300;
+    }
+    @media (prefers-color-scheme: dark) {
+      svg {
+        --yuzey: #1c1b16; --yuzey2: #25241d; --kenar: #7a7466; --ince: #3a3830;
+        --metin: #f2efe7; --soluk: #a8a294; --marka: #e08a68; --ok: #66d19e;
+        --uyari: #e8b45c;
+      }
+    }
+    .kutu   { fill: var(--yuzey); stroke: var(--kenar); stroke-width: 2; }
+    .dolu   { fill: var(--yuzey2); stroke: var(--kenar); stroke-width: 2; }
+    .cizgi  { stroke: var(--kenar); stroke-width: 2; fill: none; }
+    .ince   { stroke: var(--ince); stroke-width: 1.5; fill: none; }
+    .marka  { fill: var(--marka); }
+    .markac { stroke: var(--marka); stroke-width: 2.5; fill: none; }
+    .okc    { stroke: var(--ok); stroke-width: 2.5; fill: none; }
+    .yazi   { fill: var(--metin); font: 600 14px ui-sans-serif, system-ui, sans-serif; }
+    .kucuk  { fill: var(--soluk); font: 500 12px ui-sans-serif, system-ui, sans-serif; }
+    .kod    { fill: var(--soluk); font: 12px ui-monospace, Menlo, Consolas, monospace; }
+
+    .basamak { animation: duzlesme 5s ease-in-out infinite; }
+    @keyframes duzlesme {
+      0%, 20%  { transform: scaleY(1); }
+      55%, 90% { transform: scaleY(0.12); }
+      100%     { transform: scaleY(1); }
+    }
+    .iz { animation: iz-daral 5s ease-in-out infinite; }
+    @keyframes iz-daral {
+      0%, 20%  { stroke-dasharray: 3 22; }
+      55%, 90% { stroke-dasharray: 3 6; }
+      100%     { stroke-dasharray: 3 22; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+    }
+  </style>
+  <!-- Kendi zemini: SVG ayri belge oldugu icin sayfanin temasini bilemez.
+       Zemin olmazsa koyu tema metni acik sayfada okunmaz kaliyor. -->
+  <rect width="100%" height="100%" fill="var(--yuzey)"/>
+  <text class="yazi" x="40" y="34">Kaba pasodan kalan yüzey</text>
+  <path class="cizgi" d="M56 132h340"/>
+  <g class="basamak" style="transform-origin: 0 132px">
+    <path class="dolu" d="M56 108h44v24H56zM122 100h44v32h-44zM188 112h44v20h-44zM254 98h44v34h-44zM320 110h44v22h-44z"/>
+  </g>
+  <text class="kucuk" x="404" y="120">basamaklar</text>
+  <text class="kucuk" x="404" y="140">≈ 0.3 mm pay</text>
+
+  <text class="yazi" x="40" y="212">Finiş pasosundan sonra</text>
+  <path class="cizgi" d="M56 268h340"/>
+  <rect class="dolu" x="56" y="256" width="340" height="12"/>
+  <path class="okc iz" d="M56 250h340"/>
+  <text class="kucuk" x="404" y="258">küçük adım aralığı</text>
+  <text class="kucuk" x="404" y="278">= pürüzsüz yüzey</text>
+
+  <!-- Yan not -->
+  <text class="kucuk marka" x="480" y="36">Adım aralığı yarıya inince</text>
+  <text class="kucuk marka" x="480" y="56">süre iki katına çıkar.</text>
+  <text class="kucuk" x="480" y="80">Her yüzey ayna gibi</text>
+  <text class="kucuk" x="480" y="100">olmak zorunda değil.</text>
+
+</svg>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dağınık DXF konturunun temizlenmesi — gokhancoskun.com yazi serisi gorseli.
+     <img> ile gomulur: renk tokenlari ve hareket-azaltma kurali burada tanimli. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img"
+     aria-labelledby="b a">
+  <title id="b">Dağınık DXF konturunun temizlenmesi</title>
+  <desc id="a">Solda üst üste binmiş, uçları açık çizgilerden oluşan ham DXF konturu; sağda birleştirilmiş, tek parça kapalı kontur. Kırmızı işaretler açık uçları ve çift çizgileri gösteriyor.</desc>
+  <style>
+    svg {
+      --yuzey: #ffffff; --yuzey2: #f0ece4; --kenar: #7d7669; --ince: #d9d3c7;
+      --metin: #413e38; --soluk: #5a564d; --marka: #a8492a; --ok: #186a3b;
+      --uyari: #8a5300;
+    }
+    @media (prefers-color-scheme: dark) {
+      svg {
+        --yuzey: #1c1b16; --yuzey2: #25241d; --kenar: #7a7466; --ince: #3a3830;
+        --metin: #f2efe7; --soluk: #a8a294; --marka: #e08a68; --ok: #66d19e;
+        --uyari: #e8b45c;
+      }
+    }
+    .kutu   { fill: var(--yuzey); stroke: var(--kenar); stroke-width: 2; }
+    .dolu   { fill: var(--yuzey2); stroke: var(--kenar); stroke-width: 2; }
+    .cizgi  { stroke: var(--kenar); stroke-width: 2; fill: none; }
+    .ince   { stroke: var(--ince); stroke-width: 1.5; fill: none; }
+    .marka  { fill: var(--marka); }
+    .markac { stroke: var(--marka); stroke-width: 2.5; fill: none; }
+    .okc    { stroke: var(--ok); stroke-width: 2.5; fill: none; }
+    .yazi   { fill: var(--metin); font: 600 14px ui-sans-serif, system-ui, sans-serif; }
+    .kucuk  { fill: var(--soluk); font: 500 12px ui-sans-serif, system-ui, sans-serif; }
+    .kod    { fill: var(--soluk); font: 12px ui-monospace, Menlo, Consolas, monospace; }
+
+    .hata { fill: var(--marka); animation: hata-nabiz 4s ease-in-out infinite; }
+    .h2 { animation-delay: 0.4s; } .h3 { animation-delay: 0.8s; }
+    .iyi { animation: iyi-ciz 4s ease-in-out infinite; stroke-dasharray: 620; }
+    @keyframes hata-nabiz { 0%,100% { opacity: 0.35 } 50% { opacity: 1 } }
+    @keyframes iyi-ciz {
+      0%       { stroke-dashoffset: 0; }
+      12%      { stroke-dashoffset: 620; }
+      60%, 100% { stroke-dashoffset: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+    }
+  </style>
+  <!-- Kendi zemini: SVG ayri belge oldugu icin sayfanin temasini bilemez.
+       Zemin olmazsa koyu tema metni acik sayfada okunmaz kaliyor. -->
+  <rect width="100%" height="100%" fill="var(--yuzey)"/>
+  <text class="yazi" x="40" y="34">Ham DXF</text>
+  <text class="kucuk" x="40" y="54">açık uçlar, çift çizgiler</text>
+
+  <!-- Sol: bozuk kontur (parcali cizgiler) -->
+  <path class="cizgi" d="M56 100h150"/>
+  <path class="cizgi" d="M212 100h96"/>
+  <path class="cizgi" d="M308 104v120"/>
+  <path class="cizgi" d="M304 228H160"/>
+  <path class="cizgi" d="M150 228H62"/>
+  <path class="cizgi" d="M56 222V106"/>
+  <path class="cizgi" d="M60 104h148"/>
+
+  <circle class="hata"    cx="209" cy="100" r="5"/>
+  <circle class="hata h2" cx="308" cy="100" r="5"/>
+  <circle class="hata h3" cx="155" cy="228" r="5"/>
+  <text class="kucuk" x="40" y="270">3 açık uç · 1 çift çizgi</text>
+
+  <!-- Ok -->
+  <path class="markac" d="M348 164h36"/>
+  <path class="marka" d="M384 164l-8-5v10z"/>
+
+  <!-- Sag: temiz kontur -->
+  <text class="yazi" x="412" y="34">Temizlenmiş</text>
+  <text class="kucuk" x="412" y="54">tek parça, kapalı kontur</text>
+  <rect class="dolu" x="412" y="100" width="252" height="128" rx="4"/>
+  <rect class="okc iyi" x="412" y="100" width="252" height="128" rx="4"/>
+  <text class="kucuk" x="412" y="270">Takım yolu artık bu konturu tanır.</text>
+
+</svg>

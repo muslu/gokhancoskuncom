@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Geometrinin katmanlara ayrılması — gokhancoskun.com yazi serisi gorseli.
+     <img> ile gomulur: renk tokenlari ve hareket-azaltma kurali burada tanimli. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img"
+     aria-labelledby="b a">
+  <title id="b">Geometrinin katmanlara ayrılması</title>
+  <desc id="a">Tek bir karışık çizim, sırayla üç katmana ayrılıyor: dış kontur, cepler ve delikler. Her katman kendi rengiyle vurgulanıyor.</desc>
+  <style>
+    svg {
+      --yuzey: #ffffff; --yuzey2: #f0ece4; --kenar: #7d7669; --ince: #d9d3c7;
+      --metin: #413e38; --soluk: #5a564d; --marka: #a8492a; --ok: #186a3b;
+      --uyari: #8a5300;
+    }
+    @media (prefers-color-scheme: dark) {
+      svg {
+        --yuzey: #1c1b16; --yuzey2: #25241d; --kenar: #7a7466; --ince: #3a3830;
+        --metin: #f2efe7; --soluk: #a8a294; --marka: #e08a68; --ok: #66d19e;
+        --uyari: #e8b45c;
+      }
+    }
+    .kutu   { fill: var(--yuzey); stroke: var(--kenar); stroke-width: 2; }
+    .dolu   { fill: var(--yuzey2); stroke: var(--kenar); stroke-width: 2; }
+    .cizgi  { stroke: var(--kenar); stroke-width: 2; fill: none; }
+    .ince   { stroke: var(--ince); stroke-width: 1.5; fill: none; }
+    .marka  { fill: var(--marka); }
+    .markac { stroke: var(--marka); stroke-width: 2.5; fill: none; }
+    .okc    { stroke: var(--ok); stroke-width: 2.5; fill: none; }
+    .yazi   { fill: var(--metin); font: 600 14px ui-sans-serif, system-ui, sans-serif; }
+    .kucuk  { fill: var(--soluk); font: 500 12px ui-sans-serif, system-ui, sans-serif; }
+    .kod    { fill: var(--soluk); font: 12px ui-monospace, Menlo, Consolas, monospace; }
+
+    .k { animation: k-vurgu 6s ease-in-out infinite; }
+    .k1 { animation-delay: 0s; } .k2 { animation-delay: 2s; } .k3 { animation-delay: 4s; }
+    @keyframes k-vurgu {
+      0%            { opacity: 1; }
+      10%, 30%      { opacity: 0.3; }
+      40%, 100%     { opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+    }
+  </style>
+  <!-- Kendi zemini: SVG ayri belge oldugu icin sayfanin temasini bilemez.
+       Zemin olmazsa koyu tema metni acik sayfada okunmaz kaliyor. -->
+  <rect width="100%" height="100%" fill="var(--yuzey)"/>
+  <text class="yazi" x="40" y="34">Tek çizim, üç katman</text>
+
+  <!-- Cizim -->
+  <rect class="dolu" x="48" y="64" width="330" height="200" rx="6"/>
+  <g class="k k1">
+    <rect x="48" y="64" width="330" height="200" rx="6" fill="none"
+          stroke="var(--marka)" stroke-width="4"/>
+  </g>
+  <g class="k k2">
+    <rect x="86" y="104" width="104" height="64" rx="4" fill="none"
+          stroke="var(--ok)" stroke-width="4"/>
+    <rect x="238" y="104" width="104" height="64" rx="4" fill="none"
+          stroke="var(--ok)" stroke-width="4"/>
+  </g>
+  <g class="k k3">
+    <circle cx="122" cy="216" r="16" fill="none" stroke="var(--uyari)" stroke-width="4"/>
+    <circle cx="214" cy="216" r="16" fill="none" stroke="var(--uyari)" stroke-width="4"/>
+    <circle cx="306" cy="216" r="16" fill="none" stroke="var(--uyari)" stroke-width="4"/>
+  </g>
+
+  <!-- Katman listesi -->
+  <text class="yazi" x="432" y="34">Katmanlar</text>
+
+  <g class="k k1">
+    <rect x="432" y="60" width="16" height="16" rx="3" fill="var(--marka)"/>
+    <text class="yazi" x="460" y="74">DIS_KONTUR</text>
+    <text class="kucuk" x="460" y="92">profil, takım dışarıdan</text>
+  </g>
+  <g class="k k2">
+    <rect x="432" y="128" width="16" height="16" rx="3" fill="var(--ok)"/>
+    <text class="yazi" x="460" y="142">CEP</text>
+    <text class="kucuk" x="460" y="160">boşaltma, ada bırak</text>
+  </g>
+  <g class="k k3">
+    <rect x="432" y="196" width="16" height="16" rx="3" fill="var(--uyari)"/>
+    <text class="yazi" x="460" y="210">DELIK</text>
+    <text class="kucuk" x="460" y="228">matkap çevrimi</text>
+  </g>
+  <text class="kucuk" x="432" y="270">Katman = işleme kararı.</text>
+
+</svg>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Kaba pasoda katman katman malzeme kaldırma — gokhancoskun.com yazi serisi gorseli.
+     <img> ile gomulur: renk tokenlari ve hareket-azaltma kurali burada tanimli. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img"
+     aria-labelledby="b a">
+  <title id="b">Kaba pasoda katman katman malzeme kaldırma</title>
+  <desc id="a">Yandan görünüm: ham malzeme yukarıdan aşağıya doğru dört pasoda kaldırılıyor, altta finiş payı bırakılıyor.</desc>
+  <style>
+    svg {
+      --yuzey: #ffffff; --yuzey2: #f0ece4; --kenar: #7d7669; --ince: #d9d3c7;
+      --metin: #413e38; --soluk: #5a564d; --marka: #a8492a; --ok: #186a3b;
+      --uyari: #8a5300;
+    }
+    @media (prefers-color-scheme: dark) {
+      svg {
+        --yuzey: #1c1b16; --yuzey2: #25241d; --kenar: #7a7466; --ince: #3a3830;
+        --metin: #f2efe7; --soluk: #a8a294; --marka: #e08a68; --ok: #66d19e;
+        --uyari: #e8b45c;
+      }
+    }
+    .kutu   { fill: var(--yuzey); stroke: var(--kenar); stroke-width: 2; }
+    .dolu   { fill: var(--yuzey2); stroke: var(--kenar); stroke-width: 2; }
+    .cizgi  { stroke: var(--kenar); stroke-width: 2; fill: none; }
+    .ince   { stroke: var(--ince); stroke-width: 1.5; fill: none; }
+    .marka  { fill: var(--marka); }
+    .markac { stroke: var(--marka); stroke-width: 2.5; fill: none; }
+    .okc    { stroke: var(--ok); stroke-width: 2.5; fill: none; }
+    .yazi   { fill: var(--metin); font: 600 14px ui-sans-serif, system-ui, sans-serif; }
+    .kucuk  { fill: var(--soluk); font: 500 12px ui-sans-serif, system-ui, sans-serif; }
+    .kod    { fill: var(--soluk); font: 12px ui-monospace, Menlo, Consolas, monospace; }
+
+    .paso { animation: paso-kalk 6s ease-in-out infinite; }
+    .p1 { animation-delay: 0s; }   .p2 { animation-delay: 0.7s; }
+    .p3 { animation-delay: 1.4s; } .p4 { animation-delay: 2.1s; }
+    .kesici { animation: kesici-gez 6s ease-in-out infinite; }
+    @keyframes paso-kalk {
+      0%, 14%   { opacity: 1; }
+      30%, 86%  { opacity: 0.14; }
+      100%      { opacity: 1; }
+    }
+    @keyframes kesici-gez {
+      0%, 100% { transform: translate(0,0); }
+      12%      { transform: translate(300px, 0); }
+      25%      { transform: translate(300px, 34px); }
+      37%      { transform: translate(0, 34px); }
+      50%      { transform: translate(0, 68px); }
+      62%      { transform: translate(300px, 68px); }
+      75%      { transform: translate(300px, 102px); }
+      87%      { transform: translate(0, 102px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+    }
+  </style>
+  <!-- Kendi zemini: SVG ayri belge oldugu icin sayfanin temasini bilemez.
+       Zemin olmazsa koyu tema metni acik sayfada okunmaz kaliyor. -->
+  <rect width="100%" height="100%" fill="var(--yuzey)"/>
+  <text class="yazi" x="40" y="34">Kaba paso — yandan görünüm</text>
+
+  <!-- Ham malzeme sinirlari -->
+  <rect class="ince" x="56" y="76" width="380" height="180" rx="2"/>
+
+  <!-- Kalkacak katmanlar -->
+  <rect class="paso p1 dolu" x="56" y="76"  width="380" height="34"/>
+  <rect class="paso p2 dolu" x="56" y="110" width="380" height="34"/>
+  <rect class="paso p3 dolu" x="56" y="144" width="380" height="34"/>
+  <rect class="paso p4 dolu" x="56" y="178" width="380" height="34"/>
+
+  <!-- Kalan parca + finis payi -->
+  <rect x="56" y="212" width="380" height="44" fill="var(--yuzey2)" stroke="var(--kenar)" stroke-width="2"/>
+  <line class="markac" x1="56" y1="212" x2="436" y2="212" stroke-dasharray="6 5"/>
+  <text class="kucuk marka" x="56" y="204">finiş payı 0.3 mm — kaba paso buraya inmez</text>
+  <text class="kucuk" x="56" y="278">Parça</text>
+
+  <!-- Kesici -->
+  <g class="kesici">
+    <rect class="marka" x="60" y="46" width="26" height="34" rx="3"/>
+    <path class="marka" d="M66 80h14l-7 12z"/>
+  </g>
+
+  <!-- Aciklama -->
+  <text class="yazi" x="480" y="76">Neden katman katman?</text>
+  <text class="kucuk" x="480" y="104">Takım bir seferde tüm</text>
+  <text class="kucuk" x="480" y="124">derinliği alamaz: sapar,</text>
+  <text class="kucuk" x="480" y="144">titrer, kırılır.</text>
+  <text class="kucuk" x="480" y="180">Paso derinliği takım</text>
+  <text class="kucuk" x="480" y="200">çapına ve malzemeye</text>
+  <text class="kucuk" x="480" y="220">göre seçilir.</text>
+
+</svg>

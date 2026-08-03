@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Takım kütüphanesinden takım seçimi — gokhancoskun.com yazi serisi gorseli.
+     <img> ile gomulur: renk tokenlari ve hareket-azaltma kurali burada tanimli. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img"
+     aria-labelledby="b a">
+  <title id="b">Takım kütüphanesinden takım seçimi</title>
+  <desc id="a">Üç farklı çaptaki freze, aynı köşeye giriyor. Büyük çaplı takım köşede malzeme bırakıyor, küçük çaplı takım köşeyi tamamlıyor.</desc>
+  <style>
+    svg {
+      --yuzey: #ffffff; --yuzey2: #f0ece4; --kenar: #7d7669; --ince: #d9d3c7;
+      --metin: #413e38; --soluk: #5a564d; --marka: #a8492a; --ok: #186a3b;
+      --uyari: #8a5300;
+    }
+    @media (prefers-color-scheme: dark) {
+      svg {
+        --yuzey: #1c1b16; --yuzey2: #25241d; --kenar: #7a7466; --ince: #3a3830;
+        --metin: #f2efe7; --soluk: #a8a294; --marka: #e08a68; --ok: #66d19e;
+        --uyari: #e8b45c;
+      }
+    }
+    .kutu   { fill: var(--yuzey); stroke: var(--kenar); stroke-width: 2; }
+    .dolu   { fill: var(--yuzey2); stroke: var(--kenar); stroke-width: 2; }
+    .cizgi  { stroke: var(--kenar); stroke-width: 2; fill: none; }
+    .ince   { stroke: var(--ince); stroke-width: 1.5; fill: none; }
+    .marka  { fill: var(--marka); }
+    .markac { stroke: var(--marka); stroke-width: 2.5; fill: none; }
+    .okc    { stroke: var(--ok); stroke-width: 2.5; fill: none; }
+    .yazi   { fill: var(--metin); font: 600 14px ui-sans-serif, system-ui, sans-serif; }
+    .kucuk  { fill: var(--soluk); font: 500 12px ui-sans-serif, system-ui, sans-serif; }
+    .kod    { fill: var(--soluk); font: 12px ui-monospace, Menlo, Consolas, monospace; }
+
+    .kalan { animation: kalan-goster 5s ease-in-out infinite; }
+    .takim { animation: takim-in 5s ease-in-out infinite; }
+    .t2 { animation-delay: 0.3s; } .t3 { animation-delay: 0.6s; }
+    @keyframes kalan-goster { 0%,45%,100% { opacity: 0.25 } 55%,90% { opacity: 1 } }
+    @keyframes takim-in { 0%,100% { transform: translateY(0) } 50% { transform: translateY(10px) } }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+    }
+  </style>
+  <!-- Kendi zemini: SVG ayri belge oldugu icin sayfanin temasini bilemez.
+       Zemin olmazsa koyu tema metni acik sayfada okunmaz kaliyor. -->
+  <rect width="100%" height="100%" fill="var(--yuzey)"/>
+  <text class="yazi" x="40" y="34">Çap, köşeye ne kadar girebildiğini belirler</text>
+
+  <!-- Ic kose -->
+  <path class="dolu" d="M60 96h280v40H140v120H60z"/>
+  <path class="cizgi" d="M60 96h280v40H140v120H60z"/>
+
+  <!-- Takimlar -->
+  <g class="takim">
+    <circle cx="200" cy="180" r="46" fill="none" stroke="var(--marka)" stroke-width="3"/>
+    <text class="kucuk" x="200" y="184" text-anchor="middle" fill="var(--marka)">Ø16</text>
+  </g>
+  <g class="takim t2">
+    <circle cx="168" cy="176" r="26" fill="none" stroke="var(--ok)" stroke-width="3"/>
+  </g>
+  <g class="takim t3">
+    <circle cx="152" cy="164" r="12" fill="none" stroke="var(--uyari)" stroke-width="3"/>
+  </g>
+
+  <!-- Kalan malzeme vurgusu -->
+  <path class="kalan" d="M140 136h24v24h-24z" fill="var(--marka)" opacity="0.3"/>
+  <text class="kucuk marka" x="176" y="130">Ø16 buraya giremez</text>
+
+  <!-- Liste -->
+  <text class="yazi" x="432" y="34">Kütüphane</text>
+  <rect class="kutu" x="432" y="52" width="248" height="200" rx="6"/>
+  <line class="ince" x1="432" y1="88" x2="680" y2="88"/>
+  <text class="kucuk" x="448" y="76">Çap · Diş · Devir · İlerleme</text>
+
+  <circle cx="458" cy="116" r="7" fill="var(--marka)"/>
+  <text class="kod" x="476" y="120">Ø16  Z3  12000  3500</text>
+  <circle cx="458" cy="156" r="7" fill="var(--ok)"/>
+  <text class="kod" x="476" y="160">Ø8   Z2  16000  2200</text>
+  <circle cx="458" cy="196" r="7" fill="var(--uyari)"/>
+  <text class="kod" x="476" y="200">Ø4   Z2  20000  1200</text>
+  <text class="kucuk" x="448" y="234">Kesme verisi takımla birlikte gelir.</text>
+
+</svg>
