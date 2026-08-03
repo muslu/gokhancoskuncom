@@ -212,6 +212,14 @@ catch-all `/{sayfa_slug}` yerine **kendi route'unda** karsilanir.
 - **Valkey DB 3** — sunucu paylasimli, baska DB numarasini kullanma.
 - **Panel sertifikasi** alinana kadar nginx panel blogunda gecici olarak apex
   sertifikasi kullanilir; `deploy/scripts/panel-ssl.sh` bunu kendi sertifikasina gecirir.
+- **`sitemap.xml` HTTP/2'de tutulur — `Alt-Svc` BOSALTMAK yetmez.**
+  Duyuru host bazinda ve `ma=86400` ile onbelleklenir; anasayfayi bir kez
+  gormus fetcher sitemap'i de QUIC uzerinden ceker. Cozum: sitemap
+  location'inda `set $altsvc 'clear';` (RFC 7838) — istemci o host icin
+  tuttugu alternatif servis kaydini siler, istek HTTP/2'ye duser. Site geneli
+  h3'u anasayfadan yeniden ogrendigi icin kaybetmez.
+  Test: `curl -sI https://<host>/sitemap.xml` → `alt-svc: clear`, anasayfada
+  `alt-svc: h3=":443"`.
 - **RSS kaldirildi.** `/rss.xml` nginx'te `410 Gone` doner (301 degil — kaynak kalici
   olarak yok). Route, `<link rel="alternate">` ve alt menu bagi da silindi.
 - **Ust ve alt menu ayni sirada** tutulur (Anasayfa → Blog → menu sayfalari).
